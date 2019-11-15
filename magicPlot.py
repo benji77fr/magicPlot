@@ -35,15 +35,15 @@ class CustomTableModel(QAbstractTableModel):
             return "{}".format(section)
     
     def data(self, index, role=Qt.DisplayRole):
-        colunn = index.colunn()
+        column = index.column()
         row = index.row()
 
         if role == Qt.DisplayRole:
             if column == 0:
                 return "{:.2f}".format(self.input_freq[row])
-            elif colunn == 1:
+            elif column == 1:
                 return "{:.2f}".format(self.input_level[row])
-        elif role == QtBackgroundRole:
+        elif role == Qt.BackgroundRole:
             return QColor(Qt.white)
         elif role == Qt.TextAlignmentRole:
             return Qt.AlignRight
@@ -57,26 +57,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         super(MainWindow, self).__init__(*args, **kwargs)
         self.setupUi(self)
 
-        self.data = self.actionOpen.triggered.connect(lambda: self.openFile())
-
-        self.model = CustomTableModel(self.data)
-
-        self.tableView.setModel(self.model)
-
-        resize = QHeaderView.ResizeToContents
-        self.horizontal_header = self.tableView.horizontalHeader()
-        self.vertical_header = self.tableView.verticalHeader()
-        self.horizontal_header.setSectionResizeMode(QHeaderView.ResizeToContents)
-        self.vertical_header.setSectionResizeMode(QHeaderView.ResizeToContents)
-        self.horizontal_header.setStretchLastSection(True)
-
-        self.mainLayout = QHBoxLayout()
-        size = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
-
-        size.setHorizontalStretch(1)
-        self.tableView.setSizePolicy(size)
-        self.mainLayout.addWidget(self.tableView)
-        self.setLayout(self.mainLayout)
+        self.actionOpen.triggered.connect(lambda: self.openFile())
+        self.actionExit.triggered.connect(lambda: self.exit_app())
 
     def openFile(self):
         fileName, _ = QFileDialog.getOpenFileName(self,
@@ -85,14 +67,34 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if fileName:
             df = pd.read_csv(fileName, sep=";")
 
-        freq = df["frequence"]
-        lvl = df["level"]
+            freq = df["frequence"]
+            lvl = df["level"]
+            data = freq, lvl
+  
+            self.model = CustomTableModel(data)
 
-        return freq, lvl
+            self.tableView.setModel(self.model)
 
-        
+            # resize = QHeaderView.ResizeToContents
+            # self.horizontal_header = self.tableView.horizontalHeader()
+            # self.vertical_header = self.tableView.verticalHeader()
+            # self.horizontal_header.setSectionResizeMode(QHeaderView.ResizeToContents)
+            # self.vertical_header.setSectionResizeMode(QHeaderView.ResizeToContents)
+            # self.horizontal_header.setStretchLastSection(True)
+
+            size = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+
+            size.setHorizontalStretch(1)
+            self.tableView.setSizePolicy(size)
+            self.tableView.resizeColumnsToContents()
+
+    @pyqtSlot()
+    def exit_app(self):
+        sys.exit()
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
+
     window = MainWindow()
     window.show() 
 
