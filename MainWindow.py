@@ -13,18 +13,36 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1041, 639)
+        MainWindow.resize(1071, 620)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setEnabled(True)
         self.centralwidget.setObjectName("centralwidget")
-        self.verticalLayout = QtWidgets.QVBoxLayout(self.centralwidget)
-        self.verticalLayout.setObjectName("verticalLayout")
+        self.horizontalLayout_3 = QtWidgets.QHBoxLayout(self.centralwidget)
+        self.horizontalLayout_3.setObjectName("horizontalLayout_3")
+        self.horizontalLayout = QtWidgets.QHBoxLayout()
+        self.horizontalLayout.setObjectName("horizontalLayout")
         self.tableView = QtWidgets.QTableView(self.centralwidget)
         self.tableView.setObjectName("tableView")
-        self.verticalLayout.addWidget(self.tableView)
+        self.horizontalLayout.addWidget(self.tableView)
+        self.horizontalLayout_3.addLayout(self.horizontalLayout)
+        self.horizontalLayout3 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout3.setObjectName("horizontalLayout3")
+        self.tableView3 = QtWidgets.QTableView(self.centralwidget)
+        self.tableView3.setObjectName("tableView3")
+        self.horizontalLayout3.addWidget(self.tableView3)
+        self.horizontalLayout_3.addLayout(self.horizontalLayout3)
+        self.horizontalLayout2 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout2.setObjectName("horizontalLayout2")
+        self.tableView2 = QtWidgets.QTableView(self.centralwidget)
+        self.tableView2.setObjectName("tableView2")
+        self.horizontalLayout2.addWidget(self.tableView2)
+        self.horizontalLayout_3.addLayout(self.horizontalLayout2)
+        self.horizontalLayout_3.setStretch(0, 1)
+        self.horizontalLayout_3.setStretch(1, 1)
+        self.horizontalLayout_3.setStretch(2, 1)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1041, 22))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1071, 22))
         self.menubar.setObjectName("menubar")
         self.menuFile = QtWidgets.QMenu(self.menubar)
         self.menuFile.setObjectName("menuFile")
@@ -58,6 +76,8 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
+        
+
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
@@ -74,3 +94,5 @@ class Ui_MainWindow(object):
         self.actionConfig.setShortcut(_translate("MainWindow", "Ctrl+Shift+C"))
         self.actionPlot.setText(_translate("MainWindow", "Plot"))
         self.actionPlot.setShortcut(_translate("MainWindow", "Ctrl+Shift+P"))
+    
+    

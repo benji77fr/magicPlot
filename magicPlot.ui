@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1043</width>
-    <height>637</height>
+    <width>1162</width>
+    <height>620</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,11 +17,25 @@
    <property name="enabled">
     <bool>true</bool>
    </property>
-   <layout class="QVBoxLayout" name="verticalLayout">
+   <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="1,1,1">
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
        <widget class="QTableView" name="tableView"/>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout3">
+      <item>
+       <widget class="QTableView" name="tableView3"/>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout2">
+      <item>
+       <widget class="QTableView" name="tableView2"/>
       </item>
      </layout>
     </item>
@@ -32,7 +46,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1043</width>
+     <width>1162</width>
      <height>22</height>
     </rect>
    </property>

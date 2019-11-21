@@ -1,12 +1,13 @@
 import sys
 import pandas as pd
+import time
 
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 
 from MainWindow import Ui_MainWindow
-
+from graph import Ui_Form
 
 class CustomTableModel(QAbstractTableModel):
     def __init__(self, data=None):
@@ -40,7 +41,7 @@ class CustomTableModel(QAbstractTableModel):
 
         if role == Qt.DisplayRole:
             if column == 0:
-                return "{:.2f}".format(self.input_freq[row])
+                return "{}".format(self.input_freq[row])
             elif column == 1:
                 return "{:.2f}".format(self.input_level[row])
         elif role == Qt.BackgroundRole:
@@ -50,6 +51,12 @@ class CustomTableModel(QAbstractTableModel):
         
         return None
 
+class Graph(QMainWindow, Ui_Form):
+
+    def __init__(self, *args, **kwargs):
+        super(Graph, self).__init__(*args, **kwargs)
+        self.setupUi(self)
+
 
 class MainWindow(QMainWindow, Ui_MainWindow):
 
@@ -57,40 +64,64 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         super(MainWindow, self).__init__(*args, **kwargs)
         self.setupUi(self)
 
-        self.actionOpen.triggered.connect(lambda: self.openFile())
+        self.actionOpen.triggered.connect(lambda: self.open_file())
         self.actionExit.triggered.connect(lambda: self.exit_app())
+        self.actionPlot.triggered.connect(lambda: self.open_graph())
 
-    def openFile(self):
-        fileName, _ = QFileDialog.getOpenFileName(self,
+    def open_file(self):
+
+        i = 0
+
+        fileName, _ = QFileDialog.getOpenFileNames(self,
                                                   "Ouvrir un fichier CSV", "",
                                                   "All Files (*);;CSV Files (*.csv)")
+       
         if fileName:
-            df = pd.read_csv(fileName, sep=";")
 
-            freq = df["frequence"]
-            lvl = df["level"]
-            data = freq, lvl
-  
-            self.model = CustomTableModel(data)
+            for f in fileName:
 
-            self.tableView.setModel(self.model)
+                df = pd.read_csv(f, sep=";")
 
-            # resize = QHeaderView.ResizeToContents
-            # self.horizontal_header = self.tableView.horizontalHeader()
-            # self.vertical_header = self.tableView.verticalHeader()
-            # self.horizontal_header.setSectionResizeMode(QHeaderView.ResizeToContents)
-            # self.vertical_header.setSectionResizeMode(QHeaderView.ResizeToContents)
-            # self.horizontal_header.setStretchLastSection(True)
+                freq = df["frequence"]
+                lvl = df["level"]
+                data = freq, lvl
 
-            size = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+                if i == 0:
+                    self.model = CustomTableModel(data)
+                    self.tableView.setModel(self.model)
+                    displayTableView(self.tableView)
+                elif i == 1:
+                    self.model = CustomTableModel(data)
+                    self.tableView2.setModel(self.model)
+                    displayTableView(self.tableView2)
+                elif i == 2:
+                    self.model = CustomTableModel(data)
+                    self.tableView3.setModel(self.model)
+                    display_table_view(self.tableView3)
+                
+                i = i + 1
 
-            size.setHorizontalStretch(1)
-            self.tableView.setSizePolicy(size)
-            self.tableView.resizeColumnsToContents()
+    def open_graph(self):
 
+        self.graphWindow = Graph()
+        self.graphWindow.show()
+        self.graphWindow.exec_()
+    
+        
     @pyqtSlot()
     def exit_app(self):
         sys.exit()
+
+def display_table_view(tableView):
+
+    resize = QHeaderView.ResizeToContents
+    horizontal_header = tableView.horizontalHeader()
+    vertical_header = tableView.verticalHeader()
+    horizontal_header.setSectionResizeMode(resize)
+    vertical_header.setSectionResizeMode(resize)
+    horizontal_header.setStretchLastSection(True)
+
+    tableView.resizeColumnsToContents()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
