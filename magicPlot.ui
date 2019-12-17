@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1162</width>
-    <height>620</height>
+    <width>484</width>
+    <height>663</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,27 +17,67 @@
    <property name="enabled">
     <bool>true</bool>
    </property>
-   <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="1,1,1">
+   <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="0">
     <item>
-     <layout class="QHBoxLayout" name="horizontalLayout">
-      <item>
-       <widget class="QTableView" name="tableView"/>
-      </item>
-     </layout>
-    </item>
-    <item>
-     <layout class="QHBoxLayout" name="horizontalLayout3">
-      <item>
-       <widget class="QTableView" name="tableView3"/>
-      </item>
-     </layout>
-    </item>
-    <item>
-     <layout class="QHBoxLayout" name="horizontalLayout2">
-      <item>
-       <widget class="QTableView" name="tableView2"/>
-      </item>
-     </layout>
+     <widget class="QTabWidget" name="tabWidget">
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <widget class="QWidget" name="tab">
+       <attribute name="title">
+        <string>Tab 1</string>
+       </attribute>
+       <layout class="QHBoxLayout" name="horizontalLayout_4">
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <item>
+           <widget class="QTableView" name="tableView">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tab_2">
+       <attribute name="title">
+        <string>Tab 2</string>
+       </attribute>
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout2">
+          <item>
+           <widget class="QTableView" name="tableView2">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tab_3">
+       <attribute name="title">
+        <string>Tab 3</string>
+       </attribute>
+       <layout class="QHBoxLayout" name="horizontalLayout_6">
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout3">
+          <item>
+           <widget class="QTableView" name="tableView3">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+     </widget>
     </item>
    </layout>
   </widget>
@@ -46,7 +86,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1162</width>
+     <width>484</width>
      <height>22</height>
     </rect>
    </property>
@@ -56,6 +96,7 @@
     </property>
     <addaction name="actionOpen"/>
     <addaction name="actionSave"/>
+    <addaction name="actionClose_tab"/>
     <addaction name="actionExit"/>
    </widget>
    <widget class="QMenu" name="menuOptions">
@@ -63,12 +104,14 @@
      <string>Options</string>
     </property>
     <addaction name="actionConfig"/>
+    <addaction name="actionCSV_Modification"/>
    </widget>
    <widget class="QMenu" name="menuGraph">
     <property name="title">
      <string>Graph</string>
     </property>
     <addaction name="actionPlot"/>
+    <addaction name="actionPlot_max"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuOptions"/>
@@ -113,6 +156,21 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+P</string>
+   </property>
+  </action>
+  <action name="actionClose_tab">
+   <property name="text">
+    <string>Close tab</string>
+   </property>
+  </action>
+  <action name="actionPlot_max">
+   <property name="text">
+    <string>Plot max</string>
+   </property>
+  </action>
+  <action name="actionCSV_Modification">
+   <property name="text">
+    <string>CSV Modification</string>
    </property>
   </action>
  </widget>

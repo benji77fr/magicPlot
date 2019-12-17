@@ -1,13 +1,18 @@
 import sys
 import pandas as pd
 import time
+import os
+import numpy
 
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 
+import pyqtgraph as pg
+
 from MainWindow import Ui_MainWindow
 from graph import Ui_Form
+from csvMod import csvMod
 
 class CustomTableModel(QAbstractTableModel):
     def __init__(self, data=None):
@@ -57,6 +62,10 @@ class Graph(QMainWindow, Ui_Form):
         super(Graph, self).__init__(*args, **kwargs)
         self.setupUi(self)
 
+        self.graphicsView.setBackground('w')
+
+
+                
 
 class MainWindow(QMainWindow, Ui_MainWindow):
 
@@ -64,9 +73,48 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         super(MainWindow, self).__init__(*args, **kwargs)
         self.setupUi(self)
 
+        self.csvmod = csvMod()
+
         self.actionOpen.triggered.connect(lambda: self.open_file())
         self.actionExit.triggered.connect(lambda: self.exit_app())
         self.actionPlot.triggered.connect(lambda: self.open_graph())
+        self.actionClose_tab.triggered.connect(lambda: self.clean_tab())
+        self.actionPlot_max.triggered.connect(lambda: self.find_max())
+        self.actionCSV_Modification.triggered.connect(lambda: self.csv_modification())
+
+    def find_max(self):
+
+        self.graphWindow = Graph()
+
+        isFirstFile = True
+        list_of_dfs = []
+
+        fileName, _ = QFileDialog.getOpenFileNames(self,
+                                                  "Ouvrir un fichier CSV", "",
+                                                  "All Files (*);;CSV Files (*.csv)")
+
+
+        if fileName:
+            for f in fileName:
+                if isFirstFile == True:
+                    df = pd.read_csv(f, sep=";")
+                    list_of_dfs.append(df)
+                    isFirstFile = False
+                elif isFirstFile == False:
+                    df = pd.read_csv(f, sep=";", usecols=[1])
+                    list_of_dfs.append(df)
+           
+        combine_df = pd.concat(list_of_dfs, axis=1)
+        print(combine_df)
+
+        temp_df = combine_df.loc[:, 'level']
+        maxLevel_df = pd.DataFrame({'level': temp_df.max(axis=1)})
+
+        data_x = combine_df["frequence"]
+        data_y = maxLevel_df["level"]
+
+        self.plot(data_x, data_y, 'b')
+        self.graphWindow.show()
 
     def open_file(self):
 
@@ -84,29 +132,105 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
                 freq = df["frequence"]
                 lvl = df["level"]
+                fname = fileName
                 data = freq, lvl
 
                 if i == 0:
+                    self.tableView.setEnabled(True)
                     self.model = CustomTableModel(data)
                     self.tableView.setModel(self.model)
-                    displayTableView(self.tableView)
+                    self.tabWidget.setTabText(i,os.path.basename(fname[i]))
+                    display_table_view(self.tableView)
                 elif i == 1:
+                    self.tableView2.setEnabled(True)
                     self.model = CustomTableModel(data)
                     self.tableView2.setModel(self.model)
-                    displayTableView(self.tableView2)
+                    self.tabWidget.setTabText(i,os.path.basename(fname[i]))
+                    display_table_view(self.tableView2)
                 elif i == 2:
+                    self.tableView3.setEnabled(True)
                     self.model = CustomTableModel(data)
                     self.tableView3.setModel(self.model)
+                    self.tabWidget.setTabText(i,os.path.basename(fname[i]))
                     display_table_view(self.tableView3)
                 
                 i = i + 1
 
     def open_graph(self):
 
+        data_x = []
+        data_y = []
+
         self.graphWindow = Graph()
+
+        if self.tableView.isEnabled():
+            
+            for i in  range(self.tableView.model().rowCount()):
+                x = float(self.tableView.model().index(i, 0).data())
+                y = float(self.tableView.model().index(i, 1).data())
+
+                if x > 0 and y > 0:
+                    data_x.append(x)
+                    data_y.append(y)
+            
+            self.plot(data_x, data_y, 'r')
+
+            data_y.clear()
+            data_x.clear()
+
+        if self.tableView2.isEnabled():
+            
+            for i in  range(self.tableView2.model().rowCount()):
+                x = float(self.tableView2.model().index(i, 0).data())
+                y = float(self.tableView2.model().index(i, 1).data())
+
+                if x > 0 and y > 0:
+                    data_x.append(x)
+                    data_y.append(y)
+
+            self.plot(data_x, data_y, 'b')
+
+            data_y.clear()
+            data_x.clear()
+        
+        if self.tableView3.isEnabled():
+            
+            for i in  range(self.tableView3.model().rowCount()):
+                x = float(self.tableView3.model().index(i, 0).data())
+                y = float(self.tableView3.model().index(i, 1).data())
+
+                if x > 0 and y > 0:
+                    data_x.append(x)
+                    data_y.append(y)
+
+            self.plot(data_x, data_y, 'g')
+
+            data_y.clear()
+            data_x.clear()
+        
         self.graphWindow.show()
-        self.graphWindow.exec_()
     
+    def plot(self, x, y, color):
+        pen = pg.mkPen(color=color)
+        self.graphWindow.graphicsView.plotItem.plot(x, y,pen=pen)
+
+    def clean_tab(self):
+
+        self.model.beginResetModel()
+        self.model.endResetModel()
+
+    def csv_modification(self):
+
+        fileName, _ = QFileDialog.getOpenFileNames(self,
+                                                  "Ouvrir un fichier CSV", "",
+                                                  "All Files (*)")
+        
+        print(fileName)
+
+        extFileChanged = self.csvmod.change_extension(fileName)
+
+        print(extFileChanged)
+
         
     @pyqtSlot()
     def exit_app(self):
