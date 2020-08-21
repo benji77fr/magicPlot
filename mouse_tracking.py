@@ -1,16 +1,5 @@
 # -*- coding: utf-8 -*-
 
-"""
-Created on 2014/12/05
-
-Author: Renaud CARRIERE
-
-Modified on 2020/04/23
-
-Author: Benjamin Girard
-
-Copyright: SoftBank Robotics 2020
-"""
 
 import pyqtgraph as pg
 import numpy as np
