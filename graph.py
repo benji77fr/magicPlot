@@ -1,13 +1,5 @@
 # -*- coding: utf-8 -*-
 
-"""
-Created on 2020/04/06
-
-Author: Benjamin Girard
-
-Copyright: SoftBank Robotics 2020
-"""
-
 import pyqtgraph as pg
 from pyqtgraph import GraphicsWidget
 from PyQt5 import QtCore, QtWidgets, QtGui
