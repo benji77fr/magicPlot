@@ -1,12 +1,5 @@
 # -*- coding: utf-8 -*-
 
-"""
-Created on 2020/04/06
-
-Author: Benjamin Girard
-
-Copyright: SoftBank Robotics 2020
-"""
 
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
