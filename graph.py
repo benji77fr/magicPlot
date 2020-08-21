@@ -1,189 +1,70 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'graph.ui'
-#
-# Created by: PyQt5 UI code generator 5.13.1
-#
-# WARNING! All changes made in this file will be lost!
+"""
+Created on 2020/04/06
+
+Author: Benjamin Girard
+
+Copyright: SoftBank Robotics 2020
+"""
+
+import pyqtgraph as pg
+from pyqtgraph import GraphicsWidget
+from PyQt5 import QtCore, QtWidgets, QtGui
 
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+CLASSE_A_B_X = [30000000,230000000, 230000000,1000000000]
+CLASSE_A_Y = [60,60,67,67]
+CLASSE_B_Y = [50,50,57,57]
 
+class CustomPlotWidget(QtGui.QWidget):
+    '''
+    Class CustomPlotWidget
 
-class Ui_Form(object):
-    def setupUi(self, Form):
-        Form.setObjectName("Form")
-        Form.resize(1237, 733)
-        self.horizontalLayoutWidget_2 = QtWidgets.QWidget(Form)
-        self.horizontalLayoutWidget_2.setGeometry(QtCore.QRect(330, 0, 901, 721))
-        self.horizontalLayoutWidget_2.setObjectName("horizontalLayoutWidget_2")
-        self.horizontalLayout_2 = QtWidgets.QHBoxLayout(self.horizontalLayoutWidget_2)
-        self.horizontalLayout_2.setContentsMargins(0, 0, 0, 0)
-        self.horizontalLayout_2.setObjectName("horizontalLayout_2")
-        self.graphicsView = PlotWidget(self.horizontalLayoutWidget_2)
-        self.graphicsView.setObjectName("graphicsView")
-        self.horizontalLayout_2.addWidget(self.graphicsView)
-        self.verticalLayoutWidget = QtWidgets.QWidget(Form)
-        self.verticalLayoutWidget.setGeometry(QtCore.QRect(-1, -1, 331, 41))
-        self.verticalLayoutWidget.setObjectName("verticalLayoutWidget")
-        self.verticalLayout = QtWidgets.QVBoxLayout(self.verticalLayoutWidget)
-        self.verticalLayout.setContentsMargins(0, 0, 0, 0)
-        self.verticalLayout.setObjectName("verticalLayout")
-        self.graphSettings = QtWidgets.QLabel(self.verticalLayoutWidget)
-        font = QtGui.QFont()
-        font.setPointSize(21)
-        font.setBold(True)
-        font.setWeight(75)
-        self.graphSettings.setFont(font)
-        self.graphSettings.setAlignment(QtCore.Qt.AlignCenter)
-        self.graphSettings.setObjectName("graphSettings")
-        self.verticalLayout.addWidget(self.graphSettings)
-        self.verticalLayoutWidget_2 = QtWidgets.QWidget(Form)
-        self.verticalLayoutWidget_2.setGeometry(QtCore.QRect(0, 60, 321, 93))
-        self.verticalLayoutWidget_2.setObjectName("verticalLayoutWidget_2")
-        self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.verticalLayoutWidget_2)
-        self.verticalLayout_2.setContentsMargins(0, 0, 0, 0)
-        self.verticalLayout_2.setObjectName("verticalLayout_2")
-        self.gridLayout = QtWidgets.QGridLayout()
-        self.gridLayout.setSizeConstraint(QtWidgets.QLayout.SetMinAndMaxSize)
-        self.gridLayout.setObjectName("gridLayout")
-        self.xAxis = QtWidgets.QLabel(self.verticalLayoutWidget_2)
-        font = QtGui.QFont()
-        font.setPointSize(16)
-        font.setBold(True)
-        font.setWeight(75)
-        self.xAxis.setFont(font)
-        self.xAxis.setAlignment(QtCore.Qt.AlignCenter)
-        self.xAxis.setObjectName("xAxis")
-        self.gridLayout.addWidget(self.xAxis, 1, 0, 1, 1)
-        self.yAxisMax = QtWidgets.QLineEdit(self.verticalLayoutWidget_2)
-        self.yAxisMax.setObjectName("yAxisMax")
-        self.gridLayout.addWidget(self.yAxisMax, 2, 2, 1, 1)
-        self.yAxis = QtWidgets.QLabel(self.verticalLayoutWidget_2)
-        font = QtGui.QFont()
-        font.setPointSize(16)
-        font.setBold(True)
-        font.setWeight(75)
-        self.yAxis.setFont(font)
-        self.yAxis.setAlignment(QtCore.Qt.AlignCenter)
-        self.yAxis.setObjectName("yAxis")
-        self.gridLayout.addWidget(self.yAxis, 2, 0, 1, 1)
-        self.xAxisMin = QtWidgets.QLineEdit(self.verticalLayoutWidget_2)
-        self.xAxisMin.setObjectName("xAxisMin")
-        self.gridLayout.addWidget(self.xAxisMin, 1, 1, 1, 1)
-        self.yAxisMin = QtWidgets.QLineEdit(self.verticalLayoutWidget_2)
-        self.yAxisMin.setObjectName("yAxisMin")
-        self.gridLayout.addWidget(self.yAxisMin, 2, 1, 1, 1)
-        self.xAxisMax = QtWidgets.QLineEdit(self.verticalLayoutWidget_2)
-        self.xAxisMax.setObjectName("xAxisMax")
-        self.gridLayout.addWidget(self.xAxisMax, 1, 2, 1, 1)
-        self.minLabel = QtWidgets.QLabel(self.verticalLayoutWidget_2)
-        font = QtGui.QFont()
-        font.setPointSize(16)
-        font.setBold(True)
-        font.setWeight(75)
-        self.minLabel.setFont(font)
-        self.minLabel.setAlignment(QtCore.Qt.AlignCenter)
-        self.minLabel.setObjectName("minLabel")
-        self.gridLayout.addWidget(self.minLabel, 0, 1, 1, 1)
-        self.maxLabel = QtWidgets.QLabel(self.verticalLayoutWidget_2)
-        font = QtGui.QFont()
-        font.setPointSize(16)
-        font.setBold(True)
-        font.setWeight(75)
-        self.maxLabel.setFont(font)
-        self.maxLabel.setAlignment(QtCore.Qt.AlignCenter)
-        self.maxLabel.setObjectName("maxLabel")
-        self.gridLayout.addWidget(self.maxLabel, 0, 2, 1, 1)
-        self.gridLayout.setColumnMinimumWidth(0, 1)
-        self.gridLayout.setColumnMinimumWidth(1, 1)
-        self.gridLayout.setColumnMinimumWidth(2, 1)
-        self.gridLayout.setRowMinimumHeight(0, 1)
-        self.gridLayout.setRowMinimumHeight(1, 1)
-        self.gridLayout.setColumnStretch(0, 2)
-        self.gridLayout.setColumnStretch(1, 2)
-        self.gridLayout.setColumnStretch(2, 2)
-        self.gridLayout.setRowStretch(0, 1)
-        self.gridLayout.setRowStretch(1, 1)
-        self.verticalLayout_2.addLayout(self.gridLayout)
-        self.verticalLayoutWidget_3 = QtWidgets.QWidget(Form)
-        self.verticalLayoutWidget_3.setGeometry(QtCore.QRect(0, 160, 321, 81))
-        self.verticalLayoutWidget_3.setObjectName("verticalLayoutWidget_3")
-        self.verticalLayout_3 = QtWidgets.QVBoxLayout(self.verticalLayoutWidget_3)
-        self.verticalLayout_3.setContentsMargins(0, 0, 0, 0)
-        self.verticalLayout_3.setObjectName("verticalLayout_3")
-        self.gridLayout_2 = QtWidgets.QGridLayout()
-        self.gridLayout_2.setObjectName("gridLayout_2")
-        self.xAxisLin = QtWidgets.QCheckBox(self.verticalLayoutWidget_3)
-        font = QtGui.QFont()
-        font.setPointSize(13)
-        font.setBold(True)
-        font.setWeight(75)
-        self.xAxisLin.setFont(font)
-        self.xAxisLin.setObjectName("xAxisLin")
-        self.gridLayout_2.addWidget(self.xAxisLin, 0, 1, 1, 1)
-        self.xAxisLog = QtWidgets.QCheckBox(self.verticalLayoutWidget_3)
-        font = QtGui.QFont()
-        font.setPointSize(13)
-        font.setBold(True)
-        font.setWeight(75)
-        self.xAxisLog.setFont(font)
-        self.xAxisLog.setChecked(False)
-        self.xAxisLog.setObjectName("xAxisLog")
-        self.gridLayout_2.addWidget(self.xAxisLog, 0, 2, 1, 1)
-        self.xAxisScale = QtWidgets.QLabel(self.verticalLayoutWidget_3)
-        font = QtGui.QFont()
-        font.setPointSize(16)
-        font.setBold(True)
-        font.setWeight(75)
-        self.xAxisScale.setFont(font)
-        self.xAxisScale.setAlignment(QtCore.Qt.AlignCenter)
-        self.xAxisScale.setObjectName("xAxisScale")
-        self.gridLayout_2.addWidget(self.xAxisScale, 0, 0, 1, 1)
-        self.yAxisScale = QtWidgets.QLabel(self.verticalLayoutWidget_3)
-        font = QtGui.QFont()
-        font.setPointSize(16)
-        font.setBold(True)
-        font.setWeight(75)
-        self.yAxisScale.setFont(font)
-        self.yAxisScale.setFrameShape(QtWidgets.QFrame.NoFrame)
-        self.yAxisScale.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.yAxisScale.setAlignment(QtCore.Qt.AlignCenter)
-        self.yAxisScale.setObjectName("yAxisScale")
-        self.gridLayout_2.addWidget(self.yAxisScale, 1, 0, 1, 1)
-        self.yAxisLin = QtWidgets.QCheckBox(self.verticalLayoutWidget_3)
-        font = QtGui.QFont()
-        font.setPointSize(13)
-        font.setBold(True)
-        font.setWeight(75)
-        self.yAxisLin.setFont(font)
-        self.yAxisLin.setObjectName("yAxisLin")
-        self.gridLayout_2.addWidget(self.yAxisLin, 1, 1, 1, 1)
-        self.yAxisLog = QtWidgets.QCheckBox(self.verticalLayoutWidget_3)
-        font = QtGui.QFont()
-        font.setPointSize(13)
-        font.setBold(True)
-        font.setWeight(75)
-        self.yAxisLog.setFont(font)
-        self.yAxisLog.setObjectName("yAxisLog")
-        self.gridLayout_2.addWidget(self.yAxisLog, 1, 2, 1, 1)
-        self.verticalLayout_3.addLayout(self.gridLayout_2)
+    Création d'un objet de type PlotWidget
+    Cet objet nous permet d'avoir une fenêtre de graphique custom
+    prête à l'emploi.
 
-        self.retranslateUi(Form)
-        QtCore.QMetaObject.connectSlotsByName(Form)
+    :param
+        title: Titre du Graph (pas encore implémenter pour le moment)
+    '''
+    def __init__(self, title=None):
+        super(CustomPlotWidget, self).__init__()
 
-    def retranslateUi(self, Form):
-        _translate = QtCore.QCoreApplication.translate
-        Form.setWindowTitle(_translate("Form", "Form"))
-        self.graphSettings.setText(_translate("Form", "Graphic settings"))
-        self.xAxis.setText(_translate("Form", "X"))
-        self.yAxis.setText(_translate("Form", "Y"))
-        self.minLabel.setText(_translate("Form", "Min"))
-        self.maxLabel.setText(_translate("Form", "Max"))
-        self.xAxisLin.setText(_translate("Form", "Linear"))
-        self.xAxisLog.setText(_translate("Form", "Log"))
-        self.xAxisScale.setText(_translate("Form", "X Scale"))
-        self.yAxisScale.setText(_translate("Form", "Y Scale"))
-        self.yAxisLin.setText(_translate("Form", "Linear"))
-        self.yAxisLog.setText(_translate("Form", "Log"))
-from pyqtgraph import PlotWidget
+        self.plot_widget = pg.PlotWidget()
+        self.plot_item = self.plot_widget.getPlotItem()
+        self.plot_vb = pg.ViewBox()
+        self.title = title
+        self.gabarit = {}
+
+        layout = QtGui.QGridLayout()
+        self.setLayout(layout)
+
+        #layout.addWidget(self.title, 1, 1, 1, 2)
+        layout.addWidget(self.plot_widget, 0, 0, 2, 1)
+        self.plot_item.scene().addItem(self.plot_vb)
+        self.plot_item.setLogMode(True,False)
+        self.plot_item.showGrid(True,True)
+        self.plot_item.getAxis('left').setLabel('Niveau [dBµV]')
+        self.plot_item.getAxis('bottom').setLabel('Fréquence [HZ]')
+        # self.plot_item.getAxis('bottom').linkToView(self.plot_vb)
+        # self.plot_item.getAxis('left').linkToView(self.plot_vb)
+        self.plot_item.setRange(xRange=(7.4,9.1), yRange=(10,90), padding=0)
+        self.plot_vb.setLimits(xMin=30000000, xMax=1000000000)
+        self.plot_vb.enableAutoRange(enable=True)
+        self.plot_widget.addLegend()
+        self.setCursor(QtCore.Qt.BlankCursor)
+
+    def add_gabarit(self, classe):
+        if classe == 'A':
+            name = 'Classe A'
+            self.gabarit[name] = self.plot_item.plot(x=CLASSE_A_B_X, y=CLASSE_A_Y, pen=pg.mkPen('b', width=3), name=name)
+        if classe == 'B':
+            name = 'Classe B'
+            self.gabarit[name] = self.plot_item.plot(x=CLASSE_A_B_X, y=CLASSE_B_Y, pen=pg.mkPen('r', width=3), name=name)
+ 
+    def remove_gabarit(self, classe):
+        if classe == 'Classe A':
+            self.plot_item.removeItem(self.gabarit['Classe A'])
+        if classe == 'Classe B':
+            self.plot_item.removeItem(self.gabarit['Classe B'])
