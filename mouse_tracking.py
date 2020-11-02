@@ -1,10 +1,20 @@
 # -*- coding: utf-8 -*-
 
+"""
+Created on 2014/12/05
+
+Author: Renaud CARRIERE
+
+Modified on 2020/04/23
+
+Author: Benjamin Girard
+
+Copyright: SoftBank Robotics 2020
+"""
 
 import pyqtgraph as pg
 import numpy as np
-import PyQt5
-from PyQt5 import QtCore, QtWidgets, QtGui
+from PyQt5 import QtCore
 
 
 def find_the_closest(sorted_list, key):
@@ -61,11 +71,6 @@ class Crosshair(pg.PlotItem):
         self.view_box = self.plot.getViewBox()
         self.vb_range = self.view_box.viewRange()
 
-        # self.hideAxis('left')
-        # self.hideAxis('bottom')
-        # self.hideAxis('right')
-        # self.hideAxis('top')
-
         self.vline.hide()
         self.hline.hide()
         self.labelx.hide()
@@ -80,8 +85,8 @@ class Crosshair(pg.PlotItem):
         self.ycircle_list = []
 
         self.plot.scene().sigMouseMoved.connect(self.mouse_moved)
-        self.proxyMouseClicked = pg.SignalProxy(self.plot.scene().sigMouseClicked, slot=self.mouse_clicked)
-        self.proxyRange = pg.SignalProxy(self.plot.sigRangeChanged, slot=self.range_changed)
+        #self.proxyMouseClicked = pg.SignalProxy(self.plot.scene().sigMouseClicked, slot=self.mouse_clicked)
+        #self.proxyRange = pg.SignalProxy(self.plot.sigRangeChanged, slot=self.range_changed)
 
     def update(self):
 
@@ -167,67 +172,67 @@ class Crosshair(pg.PlotItem):
             self.moved(mousePoint)
             self.vb_range = self.view_box.viewRange()
 
-    def size_ROI(self, viewRange):
-        diffx = viewRange[0][1] - viewRange[0][0]
-        diffy = viewRange[1][1] - viewRange[1][0]
-        sizex = 0.005 * diffx
-        sizey = 0.05 * diffy
-        return (sizex, sizey)
+    # def size_ROI(self, viewRange):
+    #     diffx = viewRange[0][1] - viewRange[0][0]
+    #     diffy = viewRange[1][1] - viewRange[1][0]
+    #     sizex = 0.005 * diffx
+    #     sizey = 0.05 * diffy
+    #     return (sizex, sizey)
     
-    def mouse_clicked(self, ev):
-        if ev[0].button() == 1:
-            x = self.vline.pos().x()
-            x_log = 10 ** x
-            x = round(x)
-            if 0 <= x and x < len(self.x_data):
-                y = self.hline.pos().y()
-                (sizex, sizey) = self.size_ROI(self.vb_range)
-                roi = pg.ROI((x,y), size=(sizex, sizey), removable=True)
-                roi.addTranslateHandle((1,1))
-                roi.setAcceptedMouseButtons(QtCore.Qt.LeftButton)
-                text = pg.TextItem("x: " + "{:.2e}".format(x_log) + " y: %.2f" % y,
-                                   color='w', anchor=(0, 2), fill="b")
-                text.setParentItem(roi)
-                roi.sigRemoveRequested.connect(self.remove_roi)
-                roi.sigRegionChanged.connect(self.move_roi)
-                roi.sigClicked.connect(self.clicked_roi)
-                self.plot.addItem(roi)
+    # def mouse_clicked(self, ev):
+    #     if ev[0].button() == 1:
+    #         x = self.vline.pos().x()
+    #         x_log = 10 ** x
+    #         x = round(x)
+    #         if 0 <= x and x < len(self.x_data):
+    #             y = self.hline.pos().y()
+    #             (sizex, sizey) = self.size_ROI(self.vb_range)
+    #             roi = pg.ROI((x,y), size=(sizex, sizey), removable=True)
+    #             roi.addTranslateHandle((1,1))
+    #             roi.setAcceptedMouseButtons(QtCore.Qt.LeftButton)
+    #             text = pg.TextItem("x: " + "{:.2e}".format(x_log) + " y: %.2f" % y,
+    #                                color='w', anchor=(0, 2), fill="b")
+    #             text.setParentItem(roi)
+    #             roi.sigRemoveRequested.connect(self.remove_roi)
+    #             roi.sigRegionChanged.connect(self.move_roi)
+    #             roi.sigClicked.connect(self.clicked_roi)
+    #             self.plot.addItem(roi)
     
-    def range_changed(self, arg):
-        vb = arg[0]
-        if vb == self.vb_range:
-            viewRange = arg[1]
-            (sizex,sizey) = self.size_ROI(viewRange)
-            for item in self.plot.items:
-                if isinstance(item, pg.ROI):
-                    item.setSize((sizex, sizey))
+    # def range_changed(self, arg):
+    #     vb = arg[0]
+    #     if vb == self.vb_range:
+    #         viewRange = arg[1]
+    #         (sizex,sizey) = self.size_ROI(viewRange)
+    #         for item in self.plot.items:
+    #             if isinstance(item, pg.ROI):
+    #                 item.setSize((sizex, sizey))
     
-    def remove_roi(self, roi):
-        self.plot.removeItem(roi)
+    # def remove_roi(self, roi):
+    #     self.plot.removeItem(roi)
     
-    def move_roi(self, roi):
-        for item in self.plot.items:
-            if isinstance(item, pg.ROI):
-                item.setZValue(0)
-        roi.setZValue(1)
-        x = roi.pos()[0]
-        x_log = 10 ** x
-        x = round(x)
-        if x < 0:
-            x = 0
-        elif x >= len(self.x_data):
-            x = self.vline.pos().x() - 1
-        y = self.hline.pos().y()
-        roi.setPos((x, y), update=False)
-        for item in roi.childItems():
-            if isinstance(item, pg.TextItem):
-                item.setText("x: " + "{:.2e}".format(x_log) + " y: %.2f" % y, color='w')
+    # def move_roi(self, roi):
+    #     for item in self.plot.items:
+    #         if isinstance(item, pg.ROI):
+    #             item.setZValue(0)
+    #     roi.setZValue(1)
+    #     x = roi.pos()[0]
+    #     x_log = 10 ** x
+    #     x = round(x)
+    #     if x < 0:
+    #         x = 0
+    #     elif x >= len(self.x_data):
+    #         x = self.vline.pos().x() - 1
+    #     y = self.hline.pos().y()
+    #     roi.setPos((x, y), update=False)
+    #     for item in roi.childItems():
+    #         if isinstance(item, pg.TextItem):
+    #             item.setText("x: " + "{:.2e}".format(x_log) + " y: %.2f" % y, color='w')
 
-    def clicked_roi(self, roi, ev):
-        for item in self.plot.items:
-            if isinstance(item, pg.ROI):
-                item.setZValue(0)
-        roi.setZValue(1)
+    # def clicked_roi(self, roi, ev):
+    #     for item in self.plot.items:
+    #         if isinstance(item, pg.ROI):
+    #             item.setZValue(0)
+    #     roi.setZValue(1)
 
     def moved(self, mousePoint):
 

@@ -1,13 +1,16 @@
 # -*- coding: utf-8 -*-
 
+"""
+Created on 2020/04/06
 
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
+Author: Benjamin Girard
+
+Copyright: SoftBank Robotics 2020
+"""
+
 from PyQt5 import QtWidgets, QtCore, QtGui
 
-import os
-import sys
+import csv
 from pathlib import Path
 
 class csvMod():
@@ -23,11 +26,20 @@ class csvMod():
                                                 "Ouvrir un fichier", "",
                                                 "All Files (*)")
 
-        self.change_extension(fileName)
+        self.delete_cols_change_ext(fileName)
+            
+    def delete_cols_change_ext(self, filename):
 
-    def change_extension(self, filename):
-        
-        if filename:
-            for f in filename:
-                p = Path(f)
-                p.rename(p.with_suffix('.csv'))
+        startline, endline = 0, 28
+        for file in filename:
+
+            p = Path(file)
+            fileRename = p.rename(p.with_suffix('.csv'))
+
+            with open(fileRename, 'r', newline='', encoding='latin1') as f:
+                content = [row for i,row in enumerate(csv.reader(f), 1)
+                            if i not in range(startline, endline + 1)]
+
+            with open(fileRename, 'w', newline='') as f:
+                csv.writer(f).writerow(['frequence ; level'])
+                csv.writer(f).writerows(content)
