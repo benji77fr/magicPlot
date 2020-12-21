@@ -18,12 +18,12 @@ Le but de ce programme est de pouvoir traiter rapidement et facilement les mesur
 - Sauvegarde dans un fichier CSV de ces valeurs max
 - Renomage des fichiers en .csv (Pour les fichiers venant de l'analyseur)
 - Traitement du CSV (Suppressions des informations inutiles, ajout de header)
+- Plaçage d'un marqueur via le curseur de la souris (clique aux coordonées)
 
 
 ### En cours de dev
 
-#### Important pour RC
-- Plaçage d'un marqueur via le curseur de la souris (clique aux coordonées)
+- Générer un PDF avec un screenshot et le un tableau de valeur correspondant aux marqueur
 
 #### Bonus
 - Ajout de configuration référence (Courbe de référence pour chaque modèle de robot)
