@@ -15,7 +15,7 @@ import pandas as pd
 import os
 
 import pyqtgraph as pg
-import pyqtgraph.exporters
+from pyqtgraph import exporters
 
 from graph import CustomPlotWidget
 from mouse_tracking import Crosshair
@@ -36,6 +36,8 @@ class MainWindow(QtGui.QMainWindow):
         # Création d'un objet CustomPlotWidget
         self.graph = CustomPlotWidget()
         self.csvmod = csvMod()
+        self.mouse_tracking = Crosshair(self.graph.plot_item)
+
 
         # Création du Layout et du Widget principal
         layout = QtGui.QGridLayout()
@@ -94,6 +96,12 @@ class MainWindow(QtGui.QMainWindow):
         clearSelection = QtWidgets.QAction("Clear Plot and File selection", self)
         clearSelection.triggered.connect(self.clear_file_and_plot)
 
+        actionBackgroundWhite = QtWidgets.QAction("White background", self)
+        actionBackgroundWhite.triggered.connect(lambda: self.change_background_color('white'))
+
+        actionBackgroundBlack = QtWidgets.QAction("Black background", self)
+        actionBackgroundBlack.triggered.connect(lambda: self.change_background_color('black'))
+
         # Création du Menu
         menubar = self.menuBar()
         fileMenu = menubar.addMenu('&File')
@@ -115,7 +123,10 @@ class MainWindow(QtGui.QMainWindow):
         changeRangeMenu = plotMenu.addMenu('Change range')
         changeRangeMenu.addAction(rangeER)
         changeRangeMenu.addAction(rangeEC)
-        
+        settingsMenu = menubar.addMenu('&Settings')
+        changeBackground = settingsMenu.addMenu('Changer le background')
+        changeBackground.addAction(actionBackgroundWhite)
+        changeBackground.addAction(actionBackgroundBlack)
 
         
         # Création des Labels pour les listWidgets
@@ -147,8 +158,6 @@ class MainWindow(QtGui.QMainWindow):
         layout.addLayout(layoutLeft, 0, 0)    
         layout.addWidget(self.graph, 0, 1)
         layout.setColumnStretch(1, 3)
-
-        self.mouse_tracking = Crosshair(self.graph.plot_item)
 
         # Création d'une status bar    
         self.setStatusBar(QtWidgets.QStatusBar(self))
@@ -221,6 +230,8 @@ class MainWindow(QtGui.QMainWindow):
                     self.sourceFiles.append(f)
 
         self.populate_list_of_files(self.sourceFiles)
+
+        self.sourceFiles.clear()
     
     def checked_files(self):
         '''
@@ -274,7 +285,7 @@ class MainWindow(QtGui.QMainWindow):
             pencil = pg.mkPen(color=pg.intColor(indexColor))
             curveName = itemRead.text().split('.')[0]
 
-            self.graph.plot_item.plot(data_x, data_y, pen=pencil, name=curveName)
+            self.graph.plot_item.plot(data_x, data_y, pen=pencil, name=curveName, clickable=True)
             indexColor = indexColor + 2
         
         self.populate_list_of_plot()
@@ -333,7 +344,7 @@ class MainWindow(QtGui.QMainWindow):
         self.max_df = pd.DataFrame(list(zip(data_x,data_y)), columns=['frequence','level'])
 
     def exportImg(self):
-        exporter = pg.exporters.ImageExporter(self.graph.plot_item)
+        exporter = exporters.ImageExporter(self.graph.plot_item)
 
         fileName, _ = QtWidgets.QFileDialog.getSaveFileName(self,
                                                   "Exporter un tracer", "",
@@ -342,6 +353,27 @@ class MainWindow(QtGui.QMainWindow):
         exporter.parameters()['width'] = 1440
 
         exporter.export(fileName)
+
+    
+    def printPDF(self):
+        fileName, _ = QtWidgets.QFileDialog.getSaveFileName(
+            self, "Export PDF", None, "PDF files (.pdf);;All Files()"
+        )
+        if fileName:
+            if QtCore.QFileInfo(fileName).suffix() == "":
+                fileName += ".pdf"
+
+        self.pdfExporter.export(fileName)  
+
+    def change_background_color(self, choice : str):
+        if choice == "white":
+            self.graph.plot_widget.setBackground(pg.mkColor('#FFF'))
+            self.mouse_tracking.hline.setPen({'color': "#000"})
+            self.mouse_tracking.vline.setPen({'color': "#000"})
+        if choice == "black":
+            self.graph.plot_widget.setBackground(pg.mkColor('#000'))
+            self.mouse_tracking.hline.setPen({'color': "#FFF"})
+            self.mouse_tracking.vline.setPen({'colr': "#FFF"})
 
 def main():
     app = QtWidgets.QApplication(sys.argv)

@@ -11,11 +11,11 @@ Author: Benjamin Girard
 
 Copyright: SoftBank Robotics 2020
 """
-
+from PyQt5 import QtCore
+from PyQt5.QtWidgets import QApplication
+from numpy.lib.arraysetops import isin
 import pyqtgraph as pg
 import numpy as np
-from PyQt5 import QtCore
-
 
 def find_the_closest(sorted_list, key):
     ''' 
@@ -51,8 +51,8 @@ class Crosshair(pg.PlotItem):
         self.data_list_x_sorted = []
         self.plot = plot
 
-        self.vline = pg.InfiniteLine(angle=90, movable=False, pen=pg.mkPen('w'))
-        self.hline = pg.InfiniteLine(angle=0, movable=False, pen=pg.mkPen('w'))
+        self.vline = pg.InfiniteLine(angle=90, movable=False, pen=pg.mkPen('#000'))
+        self.hline = pg.InfiniteLine(angle=0, movable=False, pen=pg.mkPen('#000'))
 
         self.labelx = pg.TextItem(
             border=pg.mkPen('#ffaa55'),
@@ -85,12 +85,12 @@ class Crosshair(pg.PlotItem):
         self.ycircle_list = []
 
         self.plot.scene().sigMouseMoved.connect(self.mouse_moved)
-        #self.proxyMouseClicked = pg.SignalProxy(self.plot.scene().sigMouseClicked, slot=self.mouse_clicked)
+        self.plot.scene().sigMouseClicked.connect(self.mouse_clicked)
         #self.proxyRange = pg.SignalProxy(self.plot.sigRangeChanged, slot=self.range_changed)
 
     def update(self):
 
-        curvce_id = 0
+        curve_id = 0
         for plot_data_item in self.plot.listDataItems():
             (self.x_data, y_data) = plot_data_item.getData()
             self.x_data = self.x_data.tolist()
@@ -110,11 +110,11 @@ class Crosshair(pg.PlotItem):
             )
 
             self.data_list_x_sorted.append(
-                sorted(self.data_list[curvce_id]['data'].keys())
+                sorted(self.data_list[curve_id]['data'].keys())
                 )
             
             
-            curvce_id += 1
+            curve_id += 1
         
         if len(self.data_list) > 0:
             list_x = [data['x'] for data in self.data_list[0]['data'].values()]
@@ -168,77 +168,55 @@ class Crosshair(pg.PlotItem):
     def mouse_moved(self, pos):
         if self.plot.sceneBoundingRect().contains(pos):
             mousePoint = self.view_box.mapSceneToView(pos)
+            self.mouse_pos_x = mousePoint.x()
+            self.mouse_pos_y = mousePoint.y()
 
-            self.moved(mousePoint)
+            self.moved()
             self.vb_range = self.view_box.viewRange()
-
-    # def size_ROI(self, viewRange):
-    #     diffx = viewRange[0][1] - viewRange[0][0]
-    #     diffy = viewRange[1][1] - viewRange[1][0]
-    #     sizex = 0.005 * diffx
-    #     sizey = 0.05 * diffy
-    #     return (sizex, sizey)
     
-    # def mouse_clicked(self, ev):
-    #     if ev[0].button() == 1:
-    #         x = self.vline.pos().x()
-    #         x_log = 10 ** x
-    #         x = round(x)
-    #         if 0 <= x and x < len(self.x_data):
-    #             y = self.hline.pos().y()
-    #             (sizex, sizey) = self.size_ROI(self.vb_range)
-    #             roi = pg.ROI((x,y), size=(sizex, sizey), removable=True)
-    #             roi.addTranslateHandle((1,1))
-    #             roi.setAcceptedMouseButtons(QtCore.Qt.LeftButton)
-    #             text = pg.TextItem("x: " + "{:.2e}".format(x_log) + " y: %.2f" % y,
-    #                                color='w', anchor=(0, 2), fill="b")
-    #             text.setParentItem(roi)
-    #             roi.sigRemoveRequested.connect(self.remove_roi)
-    #             roi.sigRegionChanged.connect(self.move_roi)
-    #             roi.sigClicked.connect(self.clicked_roi)
-    #             self.plot.addItem(roi)
-    
-    # def range_changed(self, arg):
-    #     vb = arg[0]
-    #     if vb == self.vb_range:
-    #         viewRange = arg[1]
-    #         (sizex,sizey) = self.size_ROI(viewRange)
-    #         for item in self.plot.items:
-    #             if isinstance(item, pg.ROI):
-    #                 item.setSize((sizex, sizey))
-    
-    # def remove_roi(self, roi):
-    #     self.plot.removeItem(roi)
-    
-    # def move_roi(self, roi):
-    #     for item in self.plot.items:
-    #         if isinstance(item, pg.ROI):
-    #             item.setZValue(0)
-    #     roi.setZValue(1)
-    #     x = roi.pos()[0]
-    #     x_log = 10 ** x
-    #     x = round(x)
-    #     if x < 0:
-    #         x = 0
-    #     elif x >= len(self.x_data):
-    #         x = self.vline.pos().x() - 1
-    #     y = self.hline.pos().y()
-    #     roi.setPos((x, y), update=False)
-    #     for item in roi.childItems():
-    #         if isinstance(item, pg.TextItem):
-    #             item.setText("x: " + "{:.2e}".format(x_log) + " y: %.2f" % y, color='w')
+    def mouse_clicked(self):
+        modifiers = QApplication.keyboardModifiers()
+        if modifiers == QtCore.Qt.ShiftModifier:
+            x_value = self.mouse_pos_x
+            y_value = self.mouse_pos_y
+            x_log = 10 ** x_value
+            
+            roi = pg.ROI(pos=(x_value, y_value),
+                            size=(0.0005, 0.07), 
+                            movable=False,
+                            removable=True) 
 
-    # def clicked_roi(self, roi, ev):
-    #     for item in self.plot.items:
-    #         if isinstance(item, pg.ROI):
-    #             item.setZValue(0)
-    #     roi.setZValue(1)
+            roi.setAcceptedMouseButtons(QtCore.Qt.LeftButton)  
 
-    def moved(self, mousePoint):
+            arrow = pg.ArrowItem(pos=(0.0005, 0.1))
+            arrow.setParentItem(roi)
 
-        x_value = mousePoint.x()
+            text = pg.TextItem(
+                html=(f'<span style="color: #FFF;">'
+                    + 'Frequence: {:.2e} Hz<br> Niveau: {:.2f} dBµV'.format(x_log, y_value)
+                    + f'</span>'),
+                    anchor=(0, 1))
+            text.setParentItem(roi)
+
+            roi.sigClicked.connect(self.roi_click)
+            roi.sigRemoveRequested.connect(self.roi_remove)
+
+            self.plot.addItem(roi)
+    
+    def roi_remove(self, roi):
+        self.plot.removeItem(roi)
+     
+    def roi_click(self, roi, ev):
+        for item in self.plot.items:
+            if isinstance(item, pg.ROI):
+                item.setZValue(0)
+        roi.setZvalue(1)
+
+    def moved(self):
+
+        x_value = self.mouse_pos_x
         x_value_log = round((10**x_value))
-        y_value = mousePoint.y()
+        y_value = self.mouse_pos_y
 
         if x_value >= self.vb_range[0][0] and\
                 x_value <= self.vb_range[0][1] and\
@@ -252,42 +230,6 @@ class Crosshair(pg.PlotItem):
             self.hline.setPos(y_value)
 
             self.set_line_text(x_value, y_value, x_value_log)
-
-            # if self.min_x is not None and self.max_x is not None:
-            #     if x_value >= self.min_x and\
-            #             x_value <= self.max_x:
-            #         cpt = 0
-            #         for data in self.data_list:
-            #             try:
-            #                 self.ycircle_list[cpt].show()
-
-            #                 key = find_the_closest(
-            #                     self.data_list_x_sorted[cpt],
-            #                     round(x_value, 2)
-            #                 )
-
-            #                 posx = data['data'][key]['x']
-            #                 posy = data['data'][key]['y']
-
-            #                 pixel_point = self.view_box.mapViewToScene(
-            #                     QtCore.QPointF(posx, posy)
-            #                 )
-            #                 self.ycircle_list[cpt].setPos(posx, posy)
-
-            #                 self.set_cross_text(posx, posy, data['color'],
-            #                                      cpt, pixel_point)
-            #             except KeyError:
-            #                 pass
-
-            #             cpt += 1
-
-                    # self.unoverlap()
-
-                # else:
-                #     for item in self.ycircle_list:
-                #         item.hide()
-                #     for item in self.y_text_list:
-                #         item.hide()
 
         else:
             self.vline.hide()
@@ -316,54 +258,3 @@ class Crosshair(pg.PlotItem):
 
         self.labelx.setPos(x_value, self.vb_range[1][0])
         self.labely.setPos(self.vb_range[0][0], y_value)
-
-    # def set_cross_text(self, posx, posy, color, cpt, pixel_point):
-
-    #     html = '<span style="color: rgb(%s,%s,%s);\
-    #              font-size: 12px;"><mark>' %\
-    #         (color[0], color[1], color[2])
-
-    #     text = 'x: %.3f<br>y: %.3f' % (posx, posy)
-    #     self.y_text_list[cpt].show()
-    #     self.y_text_list[cpt].setHtml(
-    #         html + text + '</mark></span>'
-    #     )
-
-    #     self.data_list[cpt]['txt_pos']['x'] = pixel_point.x()
-    #     self.data_list[cpt]['txt_pos']['y'] = pixel_point.y()
-
-    def unoverlap(self):
-
-        length = len(self.data_list)
-        pos_dic = {
-            self.data_list[i]['txt_pos']['y']: i for i in range(length)
-        }
-        pos_list = sorted(pos_dic.keys())
-
-        try:
-            for cpt in range(length - 1):
-                id1 = pos_dic[pos_list[cpt]]
-                id2 = pos_dic[pos_list[cpt + 1]]
-
-                while pos_list[cpt] + 2 >= pos_list[cpt + 1]:
-                    pos_list[cpt + 1] += 1
-
-                self.data_list[id1]['txt_pos']['y'] = pos_list[cpt]
-                self.data_list[id2]['txt_pos']['y'] = pos_list[cpt + 1]
-
-                pos_dic = {
-                    self.data_list[i]['txt_pos']['y']: i for i in range(length)
-                }
-        except IndexError:
-            pass
-
-        self.set_pos()
-
-    def set_pos(self):
-
-        for curve_id in range(len(self.data_list)):
-            pos_x = self.data_list[curve_id]['txt_pos']['x']
-            pos_y = self.data_list[curve_id]['txt_pos']['y']
-
-            pts = self.view_box.mapSceneToView(QtCore.QPointF(pos_x, pos_y))
-            self.y_text_list[curve_id].setPos(pts.x(), pts.y())
