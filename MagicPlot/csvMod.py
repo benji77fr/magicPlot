@@ -11,7 +11,10 @@ Copyright: SoftBank Robotics 2020
 from PyQt5 import QtWidgets, QtCore, QtGui
 
 import pandas as pd
+import zipfile
+import os
 from pathlib import Path
+
 
 class csvMod():
 
@@ -23,19 +26,28 @@ class csvMod():
     def open_file(self):
 
         fileName, _ = QtWidgets.QFileDialog.getOpenFileNames(None,
-                                                "Ouvrir un fichier", "",
-                                                "All Files (*)")
+                                                             "Ouvrir un fichier", "",
+                                                             "All Files (*)")
+        self.extChanged = fileName.copy()
+        self.zip_original(fileName)
+        self.delete_cols_change_ext(self.extChanged)
 
-        self.delete_cols_change_ext(fileName)
-            
+    def zip_original(self, original):
+
+        with zipfile.ZipFile(os.path.dirname(original[0]) + "/" + "Originaux.zip", "w") as zipMe:
+            for file in original:
+                zipMe.write(file, os.path.basename(file),
+                            compress_type=zipfile.ZIP_DEFLATED)
+
     def delete_cols_change_ext(self, filename):
 
-        colName = ['frequence','level']
+        colName = ['frequence', 'level']
         for file in filename:
 
             p = Path(file)
             fileRename = p.rename(p.with_suffix('.csv'))
 
-            df = pd.read_csv(fileRename, encoding='unicode escape', usecols=[0,1], sep=';', header=None, skiprows=lambda x: x in range(28))
+            df = pd.read_csv(fileRename, encoding='unicode escape', usecols=[
+                             0, 1], sep=';', header=None, skiprows=lambda x: x in range(28))
             dfFinal = pd.DataFrame(df.values, columns=colName)
             dfFinal.to_csv(fileRename, sep=";", index=False)
