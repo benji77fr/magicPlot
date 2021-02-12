@@ -21,12 +21,14 @@ from graph import CustomPlotWidget
 from mouse_tracking import Crosshair
 from csvMod import csvMod
 
+
 class MainWindow(QtGui.QMainWindow):
     '''
     Class MainWindow
 
     Génération de l'IHM
     '''
+
     def __init__(self):
         super(MainWindow, self).__init__()
 
@@ -38,12 +40,11 @@ class MainWindow(QtGui.QMainWindow):
         self.csvmod = csvMod()
         self.mouse_tracking = Crosshair(self.graph.plot_item)
 
-
         # Création du Layout et du Widget principal
         layout = QtGui.QGridLayout()
         widget = QtWidgets.QWidget()
         widget.setLayout(layout)
-        
+
         # Création des actions menu
         actionOpen = QtWidgets.QAction("&File", self)
         actionOpen.setShortcut('Ctrl+O')
@@ -79,10 +80,12 @@ class MainWindow(QtGui.QMainWindow):
         rangeEC.triggered.connect(lambda: self.graph.change_range('EC'))
 
         actionRemoveCA = QtWidgets.QAction("Remove Classe A", self)
-        actionRemoveCA.triggered.connect(lambda: self.graph.remove_gabarit('Classe A'))
+        actionRemoveCA.triggered.connect(
+            lambda: self.graph.remove_gabarit('Classe A'))
 
-        actionRemoveCB= QtWidgets.QAction("Remove Classe B", self)
-        actionRemoveCB.triggered.connect(lambda: self.graph.remove_gabarit('Classe B'))
+        actionRemoveCB = QtWidgets.QAction("Remove Classe B", self)
+        actionRemoveCB.triggered.connect(
+            lambda: self.graph.remove_gabarit('Classe B'))
 
         actionCSV = QtWidgets.QAction("Change extension file", self)
         actionCSV.triggered.connect(self.csvmod.open_file)
@@ -93,14 +96,17 @@ class MainWindow(QtGui.QMainWindow):
         clearPlot = QtWidgets.QAction("Clear plot zone", self)
         clearPlot.triggered.connect(self.plot_clear)
 
-        clearSelection = QtWidgets.QAction("Clear Plot and File selection", self)
+        clearSelection = QtWidgets.QAction(
+            "Clear Plot and File selection", self)
         clearSelection.triggered.connect(self.clear_file_and_plot)
 
         actionBackgroundWhite = QtWidgets.QAction("White background", self)
-        actionBackgroundWhite.triggered.connect(lambda: self.change_background_color('white'))
+        actionBackgroundWhite.triggered.connect(
+            lambda: self.change_background_color('white'))
 
         actionBackgroundBlack = QtWidgets.QAction("Black background", self)
-        actionBackgroundBlack.triggered.connect(lambda: self.change_background_color('black'))
+        actionBackgroundBlack.triggered.connect(
+            lambda: self.change_background_color('black'))
 
         # Création du Menu
         menubar = self.menuBar()
@@ -128,75 +134,47 @@ class MainWindow(QtGui.QMainWindow):
         changeBackground.addAction(actionBackgroundWhite)
         changeBackground.addAction(actionBackgroundBlack)
 
-        
         # Création des Labels pour les listWidgets
-        self.labelFile = QtWidgets.QLabel("Liste de fichiers")
         self.labelPlot = QtWidgets.QLabel("Liste de courbes")
         fontLabel = QtGui.QFont()
         fontLabel.setPointSize(15)
         fontLabel.setBold(True)
-        self.labelFile.setFont(fontLabel)
-        self.labelFile.setAlignment(QtCore.Qt.AlignCenter)
         self.labelPlot.setFont(fontLabel)
         self.labelPlot.setAlignment(QtCore.Qt.AlignCenter)
 
         # Création des listWidgets qui contiendront les fichiers
         # et les plots
-        self.listFile = QtWidgets.QListWidget()
         self.listPlot = QtWidgets.QListWidget()
 
         # Création de la partie gauche du layout
         # Ce layout contient les Labels et les listWidget
         layoutLeft = QtGui.QVBoxLayout()
-        layoutLeft.addWidget(self.labelFile)
-        layoutLeft.addWidget(self.listFile)
         layoutLeft.addWidget(self.labelPlot)
         layoutLeft.addWidget(self.listPlot)
-        
-        # Ajout des parties gauche et droite dans 
+
+        # Ajout des parties gauche et droite dans
         # le layout principal
-        layout.addLayout(layoutLeft, 0, 0)    
+        layout.addLayout(layoutLeft, 0, 0)
         layout.addWidget(self.graph, 0, 1)
         layout.setColumnStretch(1, 3)
 
-        # Création d'une status bar    
+        # Création d'une status bar
         self.setStatusBar(QtWidgets.QStatusBar(self))
 
         # Définition du widget central de la Mainwindow
         # par notre widget principal
         self.setCentralWidget(widget)
-        
 
         self.sourceFiles = []
-        self.selectedFiles = []
         self.selectedPlot = []
         self.curves = {}
         self.filesPath = ""
         self.max_df = pd.DataFrame()
 
-        # Signal émit quand on coche/décoche une case dans 
+        # Signal émit quand on coche/décoche une case dans
         # les ListWidget
-        self.listFile.itemChanged.connect(self.checked_files)
         self.listPlot.itemChanged.connect(self.checked_plot)
 
-
-    def populate_list_of_files(self, listFiles):
-        '''
-        Parcours la liste de fichiers ouvert et rempli la ListWidget
-        en prenant le nom du fichier + extension
-
-        param:
-        listFiles: Contient les fichiers ouvert
-        '''
-        for f in listFiles:
-            self.filesPath = os.path.dirname(f)
-            f_name = os.path.basename(f)
-            item = QtWidgets.QListWidgetItem(f_name)
-            item.setFlags(item.flags() | QtCore.Qt.ItemIsUserCheckable)
-            item.setCheckState(QtCore.Qt.Unchecked)
-            if not self.listFile.findItems(item.text(), QtCore.Qt.MatchExactly):
-                self.listFile.addItem(item)
-    
     def populate_list_of_plot(self):
         '''
         Parcours la liste d'item contenu dans le PlotItem et rempli la
@@ -221,34 +199,20 @@ class MainWindow(QtGui.QMainWindow):
         à ouvrir
         '''
         fileName, _ = QtWidgets.QFileDialog.getOpenFileNames(self,
-                                                  "Ouvrir un fichier CSV", "",
-                                                  "All Files (*);;CSV Files (*.csv)")
+                                                             "Ouvrir un fichier CSV", "",
+                                                             "All Files (*);;CSV Files (*.csv)")
 
         if fileName:
             for f in fileName:
                 if f not in self.sourceFiles:
                     self.sourceFiles.append(f)
 
-        self.populate_list_of_files(self.sourceFiles)
+        # self.populate_list_of_files(self.sourceFiles)
+        self.read_and_plot(self.sourceFiles)
 
         self.sourceFiles.clear()
-    
-    def checked_files(self):
-        '''
-        Fonction appelée lorsque l'on coche/décoche un élément de
-        listFile(ListWidget)
-        Permet de garder une trace des fichiers sélectionnés dans la liste
-        '''
-        model = self.listFile.model()
-        for index in range(model.rowCount()):
-            item = self.listFile.item(index)
-            if item.checkState() == QtCore.Qt.Checked and item not in self.selectedFiles:
-                self.selectedFiles.append(item)
-            if item.checkState() == QtCore.Qt.Unchecked and item in self.selectedFiles:
-                self.selectedFiles.remove(item)
 
     def checked_plot(self):
-
         '''
         Fonction appelée lorque l'on coche/décoche un élément de
         listPlot(ListWidget)
@@ -266,41 +230,44 @@ class MainWindow(QtGui.QMainWindow):
                 self.selectedPlot.remove(item)
                 self.graph.plot_item.removeItem(self.curves[item.text()])
                 self.mouse_tracking.update()
-        
-        
-    
-    def read_and_plot(self):
+
+    def read_and_plot(self, sourceFiles):
         '''
         Extrait les données présente dans les fichiers sélectionnés
         et ajoute une courbe dans le PlotItem
         '''
         indexColor = 0
+        sourceFiles = sourceFiles
 
-        for itemRead in self.selectedFiles:
-            df = pd.read_csv((self.filesPath + "/" + itemRead.text()), sep=";")
+        for itemRead in sourceFiles:
+            df = pd.read_csv((os.path.dirname(itemRead) +
+                              "/" + os.path.basename(itemRead)), sep=";")
 
             data_x = df['frequence']
             data_y = df['level']
 
             pencil = pg.mkPen(color=pg.intColor(indexColor))
-            curveName = itemRead.text().split('.')[0]
+            curveName = os.path.basename(itemRead).split('.')[0]
 
-            self.graph.plot_item.plot(data_x, data_y, pen=pencil, name=curveName, clickable=True)
+            self.graph.plot_item.plot(
+                data_x, data_y, pen=pencil, name=curveName, clickable=True)
             indexColor = indexColor + 2
-        
+
         self.populate_list_of_plot()
         self.mouse_tracking.update()
 
     def plot_clear(self):
         self.graph.plot_item.clear()
-        self.graph.plot_item.addItem(self.mouse_tracking.vline, ignoreBounds=True)
-        self.graph.plot_item.addItem(self.mouse_tracking.hline, ignoreBounds=True)
-        self.graph.plot_item.addItem(self.mouse_tracking.labelx, ignoreBounds=True)
-        self.graph.plot_item.addItem(self.mouse_tracking.labely, ignoreBounds=True)
+        self.graph.plot_item.addItem(
+            self.mouse_tracking.vline, ignoreBounds=True)
+        self.graph.plot_item.addItem(
+            self.mouse_tracking.hline, ignoreBounds=True)
+        self.graph.plot_item.addItem(
+            self.mouse_tracking.labelx, ignoreBounds=True)
+        self.graph.plot_item.addItem(
+            self.mouse_tracking.labely, ignoreBounds=True)
 
     def clear_file_and_plot(self):
-        self.selectedFiles.clear()
-        self.listFile.clear()
         self.selectedPlot.clear()
         self.listPlot.clear()
 
@@ -310,10 +277,10 @@ class MainWindow(QtGui.QMainWindow):
         en cherchant le maximum (find_max)
         '''
         fileName, _ = QtWidgets.QFileDialog.getSaveFileName(self,
-                                                  "Enregistrer un fichier CSV", "", 
-                                                  "CSV Files (*.csv)")
+                                                            "Enregistrer un fichier CSV", "",
+                                                            "CSV Files (*.csv)")
         self.max_df.to_csv(fileName, index=False, header=True, sep=";")
-                                        
+
     def find_max(self):
         '''
         Permet de trouver les valeurs max en fonction d'une fréquence donnée
@@ -321,16 +288,27 @@ class MainWindow(QtGui.QMainWindow):
         '''
         isFirstFile = True
         list_of_dfs = []
+        sourceFiles = []
 
-        for itemRead in self.selectedFiles:
+        fileName, _ = QtWidgets.QFileDialog.getOpenFileNames(self,
+                                                             "Ouvrir un fichier CSV", "",
+                                                             "All Files (*);;CSV Files (*.csv)")
+
+        if fileName:
+            for f in fileName:
+                sourceFiles.append(f)
+
+        for itemRead in sourceFiles:
             if isFirstFile:
-                df = pd.read_csv((self.filesPath + "/" + itemRead.text()), sep=";")
+                df = pd.read_csv(
+                    (os.path.dirname(itemRead) + "/" + os.path.basename(itemRead)), sep=";")
                 list_of_dfs.append(df)
                 isFirstFile = False
             else:
-                df = pd.read_csv((self.filesPath + "/" + itemRead.text()), sep=";", usecols=[1])
+                df = pd.read_csv(
+                    (os.path.dirname(itemRead) + "/" + os.path.basename(itemRead)), sep=";", usecols=[1])
                 list_of_dfs.append(df)
-           
+
         combine_df = pd.concat(list_of_dfs, axis=1)
 
         temp_df = combine_df.loc[:, 'level']
@@ -341,20 +319,22 @@ class MainWindow(QtGui.QMainWindow):
 
         self.graph.plot_item.plot(data_x, data_y, pen='b', name='Maximum')
 
-        self.max_df = pd.DataFrame(list(zip(data_x,data_y)), columns=['frequence','level'])
+        self.populate_list_of_plot()
+
+        self.max_df = pd.DataFrame(list(zip(data_x, data_y)), columns=[
+                                   'frequence', 'level'])
 
     def exportImg(self):
         exporter = exporters.ImageExporter(self.graph.plot_item)
 
         fileName, _ = QtWidgets.QFileDialog.getSaveFileName(self,
-                                                  "Exporter un tracer", "",
-                                                  "Jpeg Files (*.jpg);; PNG Files (*.png)")
+                                                            "Exporter un tracer", "",
+                                                            "Jpeg Files (*.jpg);; PNG Files (*.png)")
 
         exporter.parameters()['width'] = 1440
 
         exporter.export(fileName)
 
-    
     def printPDF(self):
         fileName, _ = QtWidgets.QFileDialog.getSaveFileName(
             self, "Export PDF", None, "PDF files (.pdf);;All Files()"
@@ -363,9 +343,9 @@ class MainWindow(QtGui.QMainWindow):
             if QtCore.QFileInfo(fileName).suffix() == "":
                 fileName += ".pdf"
 
-        self.pdfExporter.export(fileName)  
+        self.pdfExporter.export(fileName)
 
-    def change_background_color(self, choice : str):
+    def change_background_color(self, choice: str):
         if choice == "white":
             self.graph.plot_widget.setBackground(pg.mkColor('#FFF'))
             self.mouse_tracking.hline.setPen({'color': "#000"})
@@ -375,13 +355,15 @@ class MainWindow(QtGui.QMainWindow):
             self.mouse_tracking.hline.setPen({'color': "#FFF"})
             self.mouse_tracking.vline.setPen({'colr': "#FFF"})
 
+
 def main():
     app = QtWidgets.QApplication(sys.argv)
 
     window = MainWindow()
-    window.show() 
+    window.show()
 
-    sys.exit(app.exec_()) 
+    sys.exit(app.exec_())
+
 
 if __name__ == "__main__":
     main()
