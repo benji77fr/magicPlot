@@ -10,3 +10,4 @@ MagicPlot/__pycache__/graph.cpython-36.pyc
 MagicPlot/__pycache__/graph.cpython-38.pyc
 MagicPlot/__pycache__/mouse_tracking.cpython-36.pyc
 MagicPlot/__pycache__/mouse_tracking.cpython-38.pyc
+*.qrc
