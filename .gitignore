@@ -1,4 +1,12 @@
 .vscode
 fichier CSV
+icons
+MagicPlot\__pycache__
 *.pyc
-*.pyc
+MagicPlot/__pycache__/__init__.cpython-36.pyc
+MagicPlot/__pycache__/csvMod.cpython-36.pyc
+MagicPlot/__pycache__/csvMod.cpython-38.pyc
+MagicPlot/__pycache__/graph.cpython-36.pyc
+MagicPlot/__pycache__/graph.cpython-38.pyc
+MagicPlot/__pycache__/mouse_tracking.cpython-36.pyc
+MagicPlot/__pycache__/mouse_tracking.cpython-38.pyc

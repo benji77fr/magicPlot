@@ -13,25 +13,10 @@ Copyright: SoftBank Robotics 2020
 """
 from PyQt5 import QtCore
 from PyQt5.QtWidgets import QApplication
-from numpy.lib.arraysetops import isin
 import pyqtgraph as pg
-import numpy as np
 
-def find_the_closest(sorted_list, key):
-    ''' 
-    Cherche dans une list, l'élément le plus proche en fonction de la clé
-    '''
+dictValues = {}
 
-    if key in sorted_list:
-        return key
-    else:
-        for cpt in range(len(sorted_list) - 1):
-            if key > sorted_list[cpt] and key < sorted_list[cpt + 1]:
-                if abs(sorted_list[cpt] - key) >= abs(
-                        sorted_list[cpt + 1] - key):
-                    return sorted_list[cpt + 1]
-                else:
-                    return sorted_list[cpt]
 
 class Crosshair(pg.PlotItem):
     '''
@@ -44,15 +29,19 @@ class Crosshair(pg.PlotItem):
     :param
         plot: PlotItem contennant les données des courbes affichées
     '''
+
     def __init__(self, plot):
         super(Crosshair, self).__init__()
 
         self.data_list = []
         self.data_list_x_sorted = []
         self.plot = plot
+        self.dictIndex = 0
 
-        self.vline = pg.InfiniteLine(angle=90, movable=False, pen=pg.mkPen('#000'))
-        self.hline = pg.InfiniteLine(angle=0, movable=False, pen=pg.mkPen('#000'))
+        self.vline = pg.InfiniteLine(
+            angle=90, movable=False, pen=pg.mkPen('#000'))
+        self.hline = pg.InfiniteLine(
+            angle=0, movable=False, pen=pg.mkPen('#000'))
 
         self.labelx = pg.TextItem(
             border=pg.mkPen('#ffaa55'),
@@ -60,9 +49,9 @@ class Crosshair(pg.PlotItem):
         self.labely = pg.TextItem(
             border=pg.mkPen('#ffaa55'),
             fill=pg.mkBrush(0, 0, 0, 210), anchor=(0.0, 0.5))
-        
+
         self.label = pg.LabelItem(justify="right")
-        
+
         self.plot.addItem(self.vline, ignoreBounds=True)
         self.plot.addItem(self.hline, ignoreBounds=True)
         self.plot.addItem(self.labelx, ignoreBounds=True)
@@ -86,7 +75,6 @@ class Crosshair(pg.PlotItem):
 
         self.plot.scene().sigMouseMoved.connect(self.mouse_moved)
         self.plot.scene().sigMouseClicked.connect(self.mouse_clicked)
-        #self.proxyRange = pg.SignalProxy(self.plot.sigRangeChanged, slot=self.range_changed)
 
     def update(self):
 
@@ -97,13 +85,13 @@ class Crosshair(pg.PlotItem):
             x_data_log = [10**val for val in self.x_data]
             y_data = y_data.tolist()
             color = plot_data_item.curve.opts['pen'].color().getRgb()
-            
+
             self.data_list.append(
                 {
-                    'color':color,
+                    'color': color,
                     'data': {round(self.x_data[cpt], 2): {'x': self.x_data[cpt],
-                                                     'xlog': x_data_log[cpt],
-                                                     'y': y_data[cpt]}
+                                                          'xlog': x_data_log[cpt],
+                                                          'y': y_data[cpt]}
                              for cpt in range(len(x_data_log))},
                     'txt_pos': {'x': None, 'y': None}
                 }
@@ -111,11 +99,10 @@ class Crosshair(pg.PlotItem):
 
             self.data_list_x_sorted.append(
                 sorted(self.data_list[curve_id]['data'].keys())
-                )
-            
-            
+            )
+
             curve_id += 1
-        
+
         if len(self.data_list) > 0:
             list_x = [data['x'] for data in self.data_list[0]['data'].values()]
             list_y = [data['y'] for data in self.data_list[0]['data'].values()]
@@ -129,13 +116,13 @@ class Crosshair(pg.PlotItem):
                 self.max_x = None
                 self.min_y = None
                 self.max_y = None
-        
+
         else:
             self.min_x = None
             self.max_x = None
             self.min_y = None
             self.max_y = None
-        
+
         for data in self.data_list:
             self.y_text_list.append(
                 pg.TextItem(
@@ -145,8 +132,8 @@ class Crosshair(pg.PlotItem):
                                data['color'][2])),
                     fill=pg.mkBrush(0, 0, 0, 210),
                     anchor=(-0.1, 0.5)
-                    )
                 )
+            )
             html_cross = '<span style="color: #%s; \
             font-size: 12px;"><mark><b>X</b>' \
             % pg.colorStr(pg.mkColor('#ffaa55'))[:-2]
@@ -154,13 +141,12 @@ class Crosshair(pg.PlotItem):
 
             self.ycircle_list.append(
                 pg.TextItem(html=html_cross,
-                             anchor=(0.45, 0.5)))
-            
+                            anchor=(0.45, 0.5)))
 
         for item in self.y_text_list:
             self.plot.addItem(item)
             item.hide()
-        
+
         for item in self.ycircle_list:
             self.plot.addItem(item)
             item.hide()
@@ -173,40 +159,49 @@ class Crosshair(pg.PlotItem):
 
             self.moved()
             self.vb_range = self.view_box.viewRange()
-    
+
     def mouse_clicked(self):
         modifiers = QApplication.keyboardModifiers()
         if modifiers == QtCore.Qt.ShiftModifier:
             x_value = self.mouse_pos_x
             y_value = self.mouse_pos_y
             x_log = 10 ** x_value
-            
-            roi = pg.ROI(pos=(x_value, y_value),
-                            size=(0.0005, 0.07), 
-                            movable=False,
-                            removable=True) 
 
-            roi.setAcceptedMouseButtons(QtCore.Qt.LeftButton)  
+            dictValues[self.dictIndex] = {
+                'Frequence': x_log,
+                'Level': y_value
+            }
+
+            self.dictIndex += 1
+
+            print(dictValues)
+
+            roi = pg.ROI(pos=(x_value, y_value),
+                         size=(0.005, 0.07),
+                         movable=False,
+                         removable=True)
+
+            roi.setAcceptedMouseButtons(QtCore.Qt.LeftButton)
 
             arrow = pg.ArrowItem(pos=(0.0005, 0.1))
             arrow.setParentItem(roi)
 
             text = pg.TextItem(
                 html=(f'<span style="color: #FFF;">'
-                    + 'Frequence: {:.2e} Hz<br> Niveau: {:.2f} dBµV'.format(x_log, y_value)
-                    + f'</span>'),
-                    anchor=(0, 1))
+                      + 'Frequence: {:.2e} Hz<br> Niveau: {:.2f} dBµV'.format(x_log, y_value)
+                      + f'</span>'),
+                anchor=(0, 1))
             text.setParentItem(roi)
 
             roi.sigClicked.connect(self.roi_click)
             roi.sigRemoveRequested.connect(self.roi_remove)
 
             self.plot.addItem(roi)
-    
+
     def roi_remove(self, roi):
         self.plot.removeItem(roi)
-     
-    def roi_click(self, roi, ev):
+
+    def roi_click(self, roi):
         for item in self.plot.items:
             if isinstance(item, pg.ROI):
                 item.setZValue(0)
@@ -236,17 +231,17 @@ class Crosshair(pg.PlotItem):
             self.hline.hide()
             for item in self.ycircle_list:
                 item.hide()
-            
+
             self.labelx.hide()
             self.labely.hide()
             for item in self.y_text_list:
                 item.hide()
-    
+
     def set_line_text(self, x_value, y_value, x_value_log=None):
 
         textx = "{:.2e}".format(x_value_log)
         texty = '%.3f' % y_value
-        
+
         html = '<span style="color: #%s; \
                  font-size: 12px;"><mark>' %\
             pg.colorStr(pg.mkColor('#ffaa55'))[:-2]

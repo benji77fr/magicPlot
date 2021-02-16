@@ -9,6 +9,7 @@ Copyright: SoftBank Robotics 2020
 """
 
 from PyQt5 import QtWidgets, QtCore, QtGui
+import qrc_ressources
 
 import sys
 import pandas as pd
@@ -46,21 +47,25 @@ class MainWindow(QtGui.QMainWindow):
         widget.setLayout(layout)
 
         # Création des actions menu
-        actionOpen = QtWidgets.QAction("&File", self)
+        actionOpen = QtWidgets.QAction(
+            QtGui.QIcon(":folder.png"), "&Ouvrir", self)
         actionOpen.setShortcut('Ctrl+O')
-        actionOpen.setStatusTip("Open one or multiple files")
+        actionOpen.setStatusTip("Ouvre un ou plusieurs fichiers")
         actionOpen.triggered.connect(self.open_files)
 
-        actionSaveMax = QtWidgets.QAction("Save Max", self)
-        actionSaveMax.setStatusTip("Save the max plot in a csv file")
+        actionSaveMax = QtWidgets.QAction(QtGui.QIcon(
+            ":disk--arrow.png"), "Sauvegarder Max", self)
+        actionSaveMax.setStatusTip(
+            "Sauvegarde le maximum pour chaque point dans un fichier CSV")
         actionSaveMax.triggered.connect(self.save_max)
 
-        actionPlot = QtWidgets.QAction("&Plot", self)
-        actionPlot.setStatusTip("Plot one or multiple curves")
+        actionPlot = QtWidgets.QAction("&Tracer", self)
+        actionPlot.setStatusTip("Trace une ou plusieurs courbes")
         actionPlot.triggered.connect(self.read_and_plot)
 
-        actionPlotMax = QtWidgets.QAction("Plot max", self)
-        actionPlotMax.setStatusTip("Plot the maximum value among the file set")
+        actionPlotMax = QtWidgets.QAction("Tracer Max", self)
+        actionPlotMax.setStatusTip(
+            "Trace la courbe représentant le maximum pour chaque point mesuré")
         actionPlotMax.triggered.connect(self.find_max)
 
         actionAddClasseA = QtWidgets.QAction("Classe A", self)
@@ -72,49 +77,51 @@ class MainWindow(QtGui.QMainWindow):
         actionAddClasseB.triggered.connect(lambda: self.graph.add_gabarit('B'))
 
         rangeER = QtWidgets.QAction("Mesure ER", self)
-        rangeER.setStatusTip("Set range for ER")
+        rangeER.setStatusTip(
+            "Change l'ordre de grandeur en abscisse pour les mesures en ER")
         rangeER.triggered.connect(lambda: self.graph.change_range('ER'))
 
         rangeEC = QtWidgets.QAction("Mesure EC", self)
-        rangeEC.setStatusTip("Set range for EC")
+        rangeEC.setStatusTip(
+            "Change l'ordre de grandeur en abscisse pour les mesures en EC")
         rangeEC.triggered.connect(lambda: self.graph.change_range('EC'))
 
-        actionRemoveCA = QtWidgets.QAction("Remove Classe A", self)
+        actionRemoveCA = QtWidgets.QAction("Enlever Classe A", self)
         actionRemoveCA.triggered.connect(
             lambda: self.graph.remove_gabarit('Classe A'))
 
-        actionRemoveCB = QtWidgets.QAction("Remove Classe B", self)
+        actionRemoveCB = QtWidgets.QAction("Enlever Classe B", self)
         actionRemoveCB.triggered.connect(
             lambda: self.graph.remove_gabarit('Classe B'))
 
-        actionCSV = QtWidgets.QAction("Change extension file", self)
+        actionCSV = QtWidgets.QAction("Traiter les fichiers", self)
         actionCSV.triggered.connect(self.csvmod.open_file)
 
-        exportImg = QtWidgets.QAction("Export results as img", self)
+        exportImg = QtWidgets.QAction("Exporter", self)
         exportImg.triggered.connect(self.exportImg)
 
-        clearPlot = QtWidgets.QAction("Clear plot zone", self)
+        clearPlot = QtWidgets.QAction("Nettoyer la zone de tracer", self)
         clearPlot.triggered.connect(self.plot_clear)
 
         clearSelection = QtWidgets.QAction(
-            "Clear Plot and File selection", self)
+            "Nettoyer la liste des tracer", self)
         clearSelection.triggered.connect(self.clear_file_and_plot)
 
-        actionBackgroundWhite = QtWidgets.QAction("White background", self)
+        actionBackgroundWhite = QtWidgets.QAction("Fond Blanc", self)
         actionBackgroundWhite.triggered.connect(
             lambda: self.change_background_color('white'))
 
-        actionBackgroundBlack = QtWidgets.QAction("Black background", self)
+        actionBackgroundBlack = QtWidgets.QAction("Fond Noir", self)
         actionBackgroundBlack.triggered.connect(
             lambda: self.change_background_color('black'))
 
         # Création du Menu
         menubar = self.menuBar()
-        fileMenu = menubar.addMenu('&File')
+        fileMenu = menubar.addMenu('&Fichier')
         fileMenu.addAction(actionOpen)
         fileMenu.addAction(actionSaveMax)
         fileMenu.addAction(actionCSV)
-        plotMenu = menubar.addMenu('&Plot')
+        plotMenu = menubar.addMenu('&Tracer')
         plotMenu.addAction(actionPlot)
         plotMenu.addAction(actionPlotMax)
         plotMenu.addAction(clearPlot)
@@ -123,16 +130,21 @@ class MainWindow(QtGui.QMainWindow):
         addGabaritMenu = plotMenu.addMenu('Ajouter gabarit')
         addGabaritMenu.addAction(actionAddClasseA)
         addGabaritMenu.addAction(actionAddClasseB)
-        removeGabaritMenu = plotMenu.addMenu('Remove gabarit')
+        removeGabaritMenu = plotMenu.addMenu('Enlever gabarit')
         removeGabaritMenu.addAction(actionRemoveCA)
         removeGabaritMenu.addAction(actionRemoveCB)
-        changeRangeMenu = plotMenu.addMenu('Change range')
+        changeRangeMenu = plotMenu.addMenu("Changer l'abscisse")
         changeRangeMenu.addAction(rangeER)
         changeRangeMenu.addAction(rangeEC)
-        settingsMenu = menubar.addMenu('&Settings')
-        changeBackground = settingsMenu.addMenu('Changer le background')
+        settingsMenu = menubar.addMenu('&Réglages')
+        changeBackground = settingsMenu.addMenu('Changer le Fond')
         changeBackground.addAction(actionBackgroundWhite)
         changeBackground.addAction(actionBackgroundBlack)
+
+        # Création Toolbar
+
+        fileToolBar = self.addToolBar("Fichier")
+        fileToolBar.addAction(actionOpen)
 
         # Création des Labels pour les listWidgets
         self.labelPlot = QtWidgets.QLabel("Liste de courbes")
