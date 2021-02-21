@@ -1,7 +1,0 @@
-<RCC version="1.0">
-<qresource>
-    <file alias="folder.png">ressources/icones/folder.png</file>
-    <file alias="disk.png">ressources/icones/disk.png</file>
-    <file alias="disk--arrow.png">ressources/icones/disk--arrow.png</file>
-</qresource>
-</RCC>
