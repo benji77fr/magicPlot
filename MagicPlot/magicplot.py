@@ -158,11 +158,15 @@ class MainWindow(QtGui.QMainWindow):
         # et les plots
         self.listPlot = QtWidgets.QListWidget()
 
+        self.changeColorBtn = QtWidgets.QPushButton()
+        self.changeColorBtn.setText("Couleur")
+
         # Création de la partie gauche du layout
         # Ce layout contient les Labels et les listWidget
         layoutLeft = QtGui.QVBoxLayout()
         layoutLeft.addWidget(self.labelPlot)
         layoutLeft.addWidget(self.listPlot)
+        layoutLeft.addWidget(self.changeColorBtn)
 
         # Ajout des parties gauche et droite dans
         # le layout principal
@@ -186,6 +190,7 @@ class MainWindow(QtGui.QMainWindow):
         # Signal émit quand on coche/décoche une case dans
         # les ListWidget
         self.listPlot.itemChanged.connect(self.checked_plot)
+        self.changeColorBtn.clicked.connect(self.on_click_color)
 
     def populate_list_of_plot(self):
         '''
@@ -366,6 +371,15 @@ class MainWindow(QtGui.QMainWindow):
             self.graph.plot_widget.setBackground(pg.mkColor('#000'))
             self.mouse_tracking.hline.setPen({'color': "#FFF"})
             self.mouse_tracking.vline.setPen({'colr': "#FFF"})
+
+    def change_plot_color(self, color):
+        color = color
+        for item in self.listPlot.selectedItems():
+            item.setData()
+
+    def on_click_color(self):
+        color = QtGui.QColorDialog.getColor()
+        self.change_plot_color(color)
 
 
 def main():
