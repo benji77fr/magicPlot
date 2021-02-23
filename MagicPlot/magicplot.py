@@ -10,6 +10,7 @@ Copyright: SoftBank Robotics 2020
 
 from PyQt5 import QtWidgets, QtCore, QtGui
 import qrc_ressources
+import qtawesome as qta
 
 import sys
 import pandas as pd
@@ -48,13 +49,12 @@ class MainWindow(QtGui.QMainWindow):
 
         # Création des actions menu
         actionOpen = QtWidgets.QAction(
-            QtGui.QIcon(":folder.png"), "&Ouvrir", self)
+            qta.icon('fa.folder-open', color='#ffc47d'), "&Ouvrir", self)
         actionOpen.setShortcut('Ctrl+O')
         actionOpen.setStatusTip("Ouvre un ou plusieurs fichiers")
         actionOpen.triggered.connect(self.open_files)
 
-        actionSaveMax = QtWidgets.QAction(QtGui.QIcon(
-            ":disk--arrow.png"), "Sauvegarder Max", self)
+        actionSaveMax = QtWidgets.QAction(qta.icon('mdi.content-save'), "Sauvegarder Max", self)
         actionSaveMax.setStatusTip(
             "Sauvegarde le maximum pour chaque point dans un fichier CSV")
         actionSaveMax.triggered.connect(self.save_max)
@@ -94,7 +94,7 @@ class MainWindow(QtGui.QMainWindow):
         actionRemoveCB.triggered.connect(
             lambda: self.graph.remove_gabarit('Classe B'))
 
-        actionCSV = QtWidgets.QAction("Traiter les fichiers", self)
+        actionCSV = QtWidgets.QAction(qta.icon('fa5s.file-csv', color='#3a9c55'), "Traiter les fichiers", self)
         actionCSV.triggered.connect(self.csvmod.open_file)
 
         exportImg = QtWidgets.QAction("Exporter", self)
@@ -114,6 +114,9 @@ class MainWindow(QtGui.QMainWindow):
         actionBackgroundBlack = QtWidgets.QAction("Fond Noir", self)
         actionBackgroundBlack.triggered.connect(
             lambda: self.change_background_color('black'))
+        
+        changeColor = QtWidgets.QAction(qta.icon('mdi.format-color-fill'), "Changer la couleur d'une courbe", self)
+        changeColor.triggered.connect(self.change_plot_color)
 
         # Création du Menu
         menubar = self.menuBar()
@@ -144,7 +147,11 @@ class MainWindow(QtGui.QMainWindow):
         # Création Toolbar
 
         fileToolBar = self.addToolBar("Fichier")
+        fileToolBar.addAction(actionCSV)
         fileToolBar.addAction(actionOpen)
+        fileToolBar.addSeparator()
+        fileToolBar.addAction(changeColor)
+
 
         # Création des Labels pour les listWidgets
         self.labelPlot = QtWidgets.QLabel("Liste de courbes")
@@ -158,15 +165,11 @@ class MainWindow(QtGui.QMainWindow):
         # et les plots
         self.listPlot = QtWidgets.QListWidget()
 
-        self.changeColorBtn = QtWidgets.QPushButton()
-        self.changeColorBtn.setText("Couleur")
-
         # Création de la partie gauche du layout
         # Ce layout contient les Labels et les listWidget
         layoutLeft = QtGui.QVBoxLayout()
         layoutLeft.addWidget(self.labelPlot)
         layoutLeft.addWidget(self.listPlot)
-        layoutLeft.addWidget(self.changeColorBtn)
 
         # Ajout des parties gauche et droite dans
         # le layout principal
@@ -190,7 +193,6 @@ class MainWindow(QtGui.QMainWindow):
         # Signal émit quand on coche/décoche une case dans
         # les ListWidget
         self.listPlot.itemChanged.connect(self.checked_plot)
-        self.changeColorBtn.clicked.connect(self.on_click_color)
 
     def populate_list_of_plot(self):
         '''
@@ -372,14 +374,10 @@ class MainWindow(QtGui.QMainWindow):
             self.mouse_tracking.hline.setPen({'color': "#FFF"})
             self.mouse_tracking.vline.setPen({'colr': "#FFF"})
 
-    def change_plot_color(self, color):
-        color = color
-        for item in self.listPlot.selectedItems():
-            item.setData()
-
-    def on_click_color(self):
+    def change_plot_color(self):
         color = QtGui.QColorDialog.getColor()
-        self.change_plot_color(color)
+        for item in self.listPlot.selectedItems():
+            self.curves[item.text()].setPen(color)            
 
 
 def main():

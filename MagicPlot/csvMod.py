@@ -26,7 +26,7 @@ class csvMod():
     def open_file(self):
 
         fileName, _ = QtWidgets.QFileDialog.getOpenFileNames(None,
-                                                             "Ouvrir un fichier", "",
+                                                             "Ouvrir le/les fichiers à traiter", "",
                                                              "All Files (*)")
         self.extChanged = fileName.copy()
         self.zip_original(fileName)
