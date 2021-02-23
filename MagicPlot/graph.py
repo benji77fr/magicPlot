@@ -16,6 +16,8 @@ from PyQt5 import QtCore, QtGui
 CLASSE_A_B_X = [30000000,230000000, 230000000,1000000000]
 CLASSE_A_Y = [60,60,67,67]
 CLASSE_B_Y = [50,50,57,57]
+CLASSE_A_Y_10M = [40,40,47,47]
+CLASSE_B_Y_10M = [30,30,37,37]
 
 class CustomPlotWidget(QtGui.QWidget):
     '''
@@ -53,12 +55,18 @@ class CustomPlotWidget(QtGui.QWidget):
 
 
     def add_gabarit(self, classe):
-        if classe == 'A':
+        if classe == 'A1':
             name = 'Classe A'
             self.gabarit[name] = self.plot_item.plot(x=CLASSE_A_B_X, y=CLASSE_A_Y, pen=pg.mkPen('b', width=3), name=name)
-        if classe == 'B':        
+        if classe == 'B1':        
             name = 'Classe B'
             self.gabarit[name] = self.plot_item.plot(x=CLASSE_A_B_X, y=CLASSE_B_Y, pen=pg.mkPen('r', width=3), name=name)
+        if classe == 'A10':
+            name = 'Classe A'
+            self.gabarit[name] = self.plot_item.plot(x=CLASSE_A_B_X, y=CLASSE_A_Y_10M, pen=pg.mkPen('b', width=3), name=name)
+        if classe == 'B10':        
+            name = 'Classe B'
+            self.gabarit[name] = self.plot_item.plot(x=CLASSE_A_B_X, y=CLASSE_B_Y_10M, pen=pg.mkPen('r', width=3), name=name)
  
     def remove_gabarit(self, classe):
         if classe == 'Classe A':

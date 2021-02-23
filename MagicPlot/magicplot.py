@@ -59,7 +59,7 @@ class MainWindow(QtGui.QMainWindow):
             "Sauvegarde le maximum pour chaque point dans un fichier CSV")
         actionSaveMax.triggered.connect(self.save_max)
 
-        actionPlot = QtWidgets.QAction("&Tracer", self)
+        actionPlot = QtWidgets.QAction(qta.icon('mdi.chart-bell-curve-cumulative'), "&Tracer", self)
         actionPlot.setStatusTip("Trace une ou plusieurs courbes")
         actionPlot.triggered.connect(self.read_and_plot)
 
@@ -68,13 +68,21 @@ class MainWindow(QtGui.QMainWindow):
             "Trace la courbe représentant le maximum pour chaque point mesuré")
         actionPlotMax.triggered.connect(self.find_max)
 
-        actionAddClasseA = QtWidgets.QAction("Classe A", self)
-        actionAddClasseA.setStatusTip("Ajoute le gabarit de la classe A")
-        actionAddClasseA.triggered.connect(lambda: self.graph.add_gabarit('A'))
+        actionAddClasseA = QtWidgets.QAction("Classe A à 1m", self)
+        actionAddClasseA.setStatusTip("Ajoute le gabarit de la classe A à 1m")
+        actionAddClasseA.triggered.connect(lambda: self.graph.add_gabarit('A1'))
 
-        actionAddClasseB = QtWidgets.QAction("Classe B", self)
-        actionAddClasseB.setStatusTip("Ajoute le gabarit de la classe B")
-        actionAddClasseB.triggered.connect(lambda: self.graph.add_gabarit('B'))
+        actionAddClasseB = QtWidgets.QAction("Classe B à 1m", self)
+        actionAddClasseB.setStatusTip("Ajoute le gabarit de la classe B à 1m")
+        actionAddClasseB.triggered.connect(lambda: self.graph.add_gabarit('B1'))
+
+        actionAddClasseA10 = QtWidgets.QAction("Classe A à 10m", self)
+        actionAddClasseA10.setStatusTip("Ajoute le gabarit de la classe A à 10m")
+        actionAddClasseA10.triggered.connect(lambda: self.graph.add_gabarit('A10'))
+
+        actionAddClasseB10 = QtWidgets.QAction("Classe B à 10m", self)
+        actionAddClasseB10.setStatusTip("Ajoute le gabarit de la classe B à 10m")
+        actionAddClasseB10.triggered.connect(lambda: self.graph.add_gabarit('B10'))
 
         rangeER = QtWidgets.QAction("Mesure ER", self)
         rangeER.setStatusTip(
@@ -97,7 +105,7 @@ class MainWindow(QtGui.QMainWindow):
         actionCSV = QtWidgets.QAction(qta.icon('fa5s.file-csv', color='#3a9c55'), "Traiter les fichiers", self)
         actionCSV.triggered.connect(self.csvmod.open_file)
 
-        exportImg = QtWidgets.QAction("Exporter", self)
+        exportImg = QtWidgets.QAction(qta.icon('mdi.file-export-outline'), "Exporter", self)
         exportImg.triggered.connect(self.exportImg)
 
         clearPlot = QtWidgets.QAction("Nettoyer la zone de tracer", self)
@@ -115,7 +123,7 @@ class MainWindow(QtGui.QMainWindow):
         actionBackgroundBlack.triggered.connect(
             lambda: self.change_background_color('black'))
         
-        changeColor = QtWidgets.QAction(qta.icon('mdi.format-color-fill'), "Changer la couleur d'une courbe", self)
+        changeColor = QtWidgets.QAction(qta.icon('mdi.chart-bell-curve-cumulative', 'mdi.format-color-fill', options=[{'scale_factor': 1.2}, {'color': 'red'}]), "Changer la couleur d'une courbe", self)
         changeColor.triggered.connect(self.change_plot_color)
 
         # Création du Menu
@@ -124,15 +132,17 @@ class MainWindow(QtGui.QMainWindow):
         fileMenu.addAction(actionOpen)
         fileMenu.addAction(actionSaveMax)
         fileMenu.addAction(actionCSV)
+        fileMenu.addAction(exportImg)
         plotMenu = menubar.addMenu('&Tracer')
         plotMenu.addAction(actionPlot)
         plotMenu.addAction(actionPlotMax)
         plotMenu.addAction(clearPlot)
         plotMenu.addAction(clearSelection)
-        plotMenu.addAction(exportImg)
         addGabaritMenu = plotMenu.addMenu('Ajouter gabarit')
         addGabaritMenu.addAction(actionAddClasseA)
+        addGabaritMenu.addAction(actionAddClasseA10)
         addGabaritMenu.addAction(actionAddClasseB)
+        addGabaritMenu.addAction(actionAddClasseB10)
         removeGabaritMenu = plotMenu.addMenu('Enlever gabarit')
         removeGabaritMenu.addAction(actionRemoveCA)
         removeGabaritMenu.addAction(actionRemoveCB)
