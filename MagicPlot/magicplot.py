@@ -9,7 +9,6 @@ Copyright: SoftBank Robotics 2020
 """
 
 from PyQt5 import QtWidgets, QtCore, QtGui
-import qrc_ressources
 import qtawesome as qta
 
 import sys
@@ -22,6 +21,7 @@ from pyqtgraph import exporters
 from graph import CustomPlotWidget
 from mouse_tracking import Crosshair
 from csvMod import csvMod
+from PDFExporter import PDFExporter
 
 
 class MainWindow(QtGui.QMainWindow):
@@ -41,6 +41,7 @@ class MainWindow(QtGui.QMainWindow):
         self.graph = CustomPlotWidget()
         self.csvmod = csvMod()
         self.mouse_tracking = Crosshair(self.graph.plot_item)
+        self.pdfExporter = PDFExporter(self.graph.plot_item.scene())
 
         # Création du Layout et du Widget principal
         layout = QtGui.QGridLayout()
@@ -106,7 +107,7 @@ class MainWindow(QtGui.QMainWindow):
         actionCSV.triggered.connect(self.csvmod.open_file)
 
         exportImg = QtWidgets.QAction(qta.icon('mdi.file-export-outline'), "Exporter", self)
-        exportImg.triggered.connect(self.exportImg)
+        exportImg.triggered.connect(self.printPDF)
 
         clearPlot = QtWidgets.QAction("Nettoyer la zone de tracer", self)
         clearPlot.triggered.connect(self.plot_clear)
@@ -159,6 +160,7 @@ class MainWindow(QtGui.QMainWindow):
         fileToolBar = self.addToolBar("Fichier")
         fileToolBar.addAction(actionCSV)
         fileToolBar.addAction(actionOpen)
+        fileToolBar.addAction(exportImg)
         fileToolBar.addSeparator()
         fileToolBar.addAction(changeColor)
 
@@ -365,14 +367,15 @@ class MainWindow(QtGui.QMainWindow):
         exporter.export(fileName)
 
     def printPDF(self):
-        fileName, _ = QtWidgets.QFileDialog.getSaveFileName(
-            self, "Export PDF", None, "PDF files (.pdf);;All Files()"
-        )
-        if fileName:
-            if QtCore.QFileInfo(fileName).suffix() == "":
-                fileName += ".pdf"
+        # fileName, _ = QtWidgets.QFileDialog.getSaveFileName(
+        #     self, "Export PDF", None, "PDF files (.pdf);;All Files()"
+        # )
+        # if fileName:
+        #     if QtCore.QFileInfo(fileName).suffix() == "":
+        #         fileName += ".pdf"
 
-        self.pdfExporter.export(fileName)
+        # self.pdfExporter.export(fileName)
+        pass
 
     def change_background_color(self, choice: str):
         if choice == "white":

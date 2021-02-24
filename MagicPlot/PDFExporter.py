@@ -5,6 +5,8 @@ from PyQt5.QtWidgets import QGraphicsItem, QApplication
 from PyQt5.QtGui import QPainter, QPdfWriter
 from PyQt5.QtCore import QMarginsF, Qt, QSizeF, QRectF
 
+from graph import CustomPlotWidget
+
 
 class PDFExporter(Exporter):
     """A pdf exporter for pyqtgraph graphs. Based on pyqtgraph's
@@ -16,10 +18,8 @@ class PDFExporter(Exporter):
 
     def __init__(self, item):
         Exporter.__init__(self, item)
-        if isinstance(item, QGraphicsItem):
-            scene = item.scene()
-        else:
-            scene = item
+
+        scene = item
         bgbrush = scene.views()[0].backgroundBrush()
         bg = bgbrush.color()
         if bgbrush.style() == Qt.NoBrush:
@@ -37,7 +37,7 @@ class PDFExporter(Exporter):
         except:  # pylint: disable=bare-except
             pass
 
-    def export(self, filename=None):
+    def export(self, filename):
         pw = QPdfWriter(filename)
         dpi = QApplication.desktop().logicalDpiX()
         pw.setResolution(dpi)
