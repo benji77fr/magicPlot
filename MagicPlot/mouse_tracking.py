@@ -36,7 +36,7 @@ class Crosshair(pg.PlotItem):
         self.data_list = []
         self.data_list_x_sorted = []
         self.plot = plot
-        self.dictIndex = 0
+        self.dictValues = {'first': {'col1': 'Frequence', 'col2': 'Niveau'}}
 
         self.vline = pg.InfiniteLine(
             angle=90, movable=False, pen=pg.mkPen('#000'))
@@ -167,15 +167,6 @@ class Crosshair(pg.PlotItem):
             y_value = self.mouse_pos_y
             x_log = 10 ** x_value
 
-            dictValues[self.dictIndex] = {
-                'Frequence': x_log,
-                'Level': y_value
-            }
-
-            self.dictIndex += 1
-
-            print(dictValues)
-
             roi = pg.ROI(pos=(x_value, y_value),
                          size=(0.005, 0.07),
                          movable=False,
@@ -198,8 +189,15 @@ class Crosshair(pg.PlotItem):
 
             self.plot.addItem(roi)
 
+            self.dictValues[roi] = {
+                'Frequence': f"{x_log}",
+                'Level': f"{y_value}"
+            }
+            print(self.dictValues)
+
     def roi_remove(self, roi):
         self.plot.removeItem(roi)
+        self.dictValues.pop(roi)
 
     def roi_click(self, roi):
         for item in self.plot.items:

@@ -5,8 +5,6 @@ from PyQt5.QtWidgets import QGraphicsItem, QApplication
 from PyQt5.QtGui import QPainter, QPdfWriter
 from PyQt5.QtCore import QMarginsF, Qt, QSizeF, QRectF
 
-from graph import CustomPlotWidget
-
 
 class PDFExporter(Exporter):
     """A pdf exporter for pyqtgraph graphs. Based on pyqtgraph's
@@ -33,7 +31,8 @@ class PDFExporter(Exporter):
             for item in self.getPaintItems():
                 if isinstance(item, ChildGroup):
                     if item.flags() & QGraphicsItem.ItemClipsChildrenToShape:
-                        item.setFlag(QGraphicsItem.ItemClipsChildrenToShape, False)
+                        item.setFlag(
+                            QGraphicsItem.ItemClipsChildrenToShape, False)
         except:  # pylint: disable=bare-except
             pass
 

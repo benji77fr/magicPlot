@@ -22,6 +22,7 @@ from graph import CustomPlotWidget
 from mouse_tracking import Crosshair
 from csvMod import csvMod
 from PDFExporter import PDFExporter
+from pdfprinter import PDF
 
 
 class MainWindow(QtGui.QMainWindow):
@@ -55,12 +56,14 @@ class MainWindow(QtGui.QMainWindow):
         actionOpen.setStatusTip("Ouvre un ou plusieurs fichiers")
         actionOpen.triggered.connect(self.open_files)
 
-        actionSaveMax = QtWidgets.QAction(qta.icon('mdi.content-save'), "Sauvegarder Max", self)
+        actionSaveMax = QtWidgets.QAction(
+            qta.icon('mdi.content-save'), "Sauvegarder Max", self)
         actionSaveMax.setStatusTip(
             "Sauvegarde le maximum pour chaque point dans un fichier CSV")
         actionSaveMax.triggered.connect(self.save_max)
 
-        actionPlot = QtWidgets.QAction(qta.icon('mdi.chart-bell-curve-cumulative'), "&Tracer", self)
+        actionPlot = QtWidgets.QAction(
+            qta.icon('mdi.chart-bell-curve-cumulative'), "&Tracer", self)
         actionPlot.setStatusTip("Trace une ou plusieurs courbes")
         actionPlot.triggered.connect(self.read_and_plot)
 
@@ -71,19 +74,25 @@ class MainWindow(QtGui.QMainWindow):
 
         actionAddClasseA = QtWidgets.QAction("Classe A à 1m", self)
         actionAddClasseA.setStatusTip("Ajoute le gabarit de la classe A à 1m")
-        actionAddClasseA.triggered.connect(lambda: self.graph.add_gabarit('A1'))
+        actionAddClasseA.triggered.connect(
+            lambda: self.graph.add_gabarit('A1'))
 
         actionAddClasseB = QtWidgets.QAction("Classe B à 1m", self)
         actionAddClasseB.setStatusTip("Ajoute le gabarit de la classe B à 1m")
-        actionAddClasseB.triggered.connect(lambda: self.graph.add_gabarit('B1'))
+        actionAddClasseB.triggered.connect(
+            lambda: self.graph.add_gabarit('B1'))
 
         actionAddClasseA10 = QtWidgets.QAction("Classe A à 10m", self)
-        actionAddClasseA10.setStatusTip("Ajoute le gabarit de la classe A à 10m")
-        actionAddClasseA10.triggered.connect(lambda: self.graph.add_gabarit('A10'))
+        actionAddClasseA10.setStatusTip(
+            "Ajoute le gabarit de la classe A à 10m")
+        actionAddClasseA10.triggered.connect(
+            lambda: self.graph.add_gabarit('A10'))
 
         actionAddClasseB10 = QtWidgets.QAction("Classe B à 10m", self)
-        actionAddClasseB10.setStatusTip("Ajoute le gabarit de la classe B à 10m")
-        actionAddClasseB10.triggered.connect(lambda: self.graph.add_gabarit('B10'))
+        actionAddClasseB10.setStatusTip(
+            "Ajoute le gabarit de la classe B à 10m")
+        actionAddClasseB10.triggered.connect(
+            lambda: self.graph.add_gabarit('B10'))
 
         rangeER = QtWidgets.QAction("Mesure ER", self)
         rangeER.setStatusTip(
@@ -103,11 +112,13 @@ class MainWindow(QtGui.QMainWindow):
         actionRemoveCB.triggered.connect(
             lambda: self.graph.remove_gabarit('Classe B'))
 
-        actionCSV = QtWidgets.QAction(qta.icon('fa5s.file-csv', color='#3a9c55'), "Traiter les fichiers", self)
+        actionCSV = QtWidgets.QAction(
+            qta.icon('fa5s.file-csv', color='#3a9c55'), "Traiter les fichiers", self)
         actionCSV.triggered.connect(self.csvmod.open_file)
 
-        exportImg = QtWidgets.QAction(qta.icon('mdi.file-export-outline'), "Exporter", self)
-        exportImg.triggered.connect(self.printPDF)
+        exportImg = QtWidgets.QAction(
+            qta.icon('mdi.file-export-outline'), "Exporter", self)
+        exportImg.triggered.connect(self.exportImg)
 
         clearPlot = QtWidgets.QAction("Nettoyer la zone de tracer", self)
         clearPlot.triggered.connect(self.plot_clear)
@@ -123,8 +134,9 @@ class MainWindow(QtGui.QMainWindow):
         actionBackgroundBlack = QtWidgets.QAction("Fond Noir", self)
         actionBackgroundBlack.triggered.connect(
             lambda: self.change_background_color('black'))
-        
-        changeColor = QtWidgets.QAction(qta.icon('mdi.chart-bell-curve-cumulative', 'mdi.format-color-fill', options=[{'scale_factor': 1.2}, {'color': 'red'}]), "Changer la couleur d'une courbe", self)
+
+        changeColor = QtWidgets.QAction(qta.icon('mdi.chart-bell-curve-cumulative', 'mdi.format-color-fill', options=[
+                                        {'scale_factor': 1.2}, {'color': 'red'}]), "Changer la couleur d'une courbe", self)
         changeColor.triggered.connect(self.change_plot_color)
 
         # Création du Menu
@@ -163,7 +175,6 @@ class MainWindow(QtGui.QMainWindow):
         fileToolBar.addAction(exportImg)
         fileToolBar.addSeparator()
         fileToolBar.addAction(changeColor)
-
 
         # Création des Labels pour les listWidgets
         self.labelPlot = QtWidgets.QLabel("Liste de courbes")
@@ -355,18 +366,7 @@ class MainWindow(QtGui.QMainWindow):
         self.max_df = pd.DataFrame(list(zip(data_x, data_y)), columns=[
                                    'frequence', 'level'])
 
-    def exportImg(self):
-        exporter = exporters.ImageExporter(self.graph.plot_item)
-
-        fileName, _ = QtWidgets.QFileDialog.getSaveFileName(self,
-                                                            "Exporter un tracer", "",
-                                                            "Jpeg Files (*.jpg);; PNG Files (*.png)")
-
-        exporter.parameters()['width'] = 1440
-
-        exporter.export(fileName)
-
-    def printPDF(self):
+    def printPDF(self, plotImage):
         # fileName, _ = QtWidgets.QFileDialog.getSaveFileName(
         #     self, "Export PDF", None, "PDF files (.pdf);;All Files()"
         # )
@@ -375,7 +375,24 @@ class MainWindow(QtGui.QMainWindow):
         #         fileName += ".pdf"
 
         # self.pdfExporter.export(fileName)
-        pass
+
+        pdf = PDF(plot=plotImage,
+                  data=self.mouse_tracking.dictValues, title='Test')
+        pdf.add_page(orientation='L')
+        pdf.set_font("Helvetica", size=10)
+        pdf.print_result()
+        pdf.output('test.pdf')
+
+    def exportImg(self):
+        exporter = exporters.ImageExporter(self.graph.plot_item)
+
+        fileName, _ = QtWidgets.QFileDialog.getSaveFileName(self,
+                                                            "Exporter un tracer", "",
+                                                            "Jpeg Files (*.jpg);; PNG Files (*.png)")
+
+        exporter.export(fileName)
+
+        self.printPDF(fileName)
 
     def change_background_color(self, choice: str):
         if choice == "white":
@@ -390,7 +407,7 @@ class MainWindow(QtGui.QMainWindow):
     def change_plot_color(self):
         color = QtGui.QColorDialog.getColor()
         for item in self.listPlot.selectedItems():
-            self.curves[item.text()].setPen(color)            
+            self.curves[item.text()].setPen(color)
 
 
 def main():
