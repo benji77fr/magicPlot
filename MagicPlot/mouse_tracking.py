@@ -36,7 +36,7 @@ class Crosshair(pg.PlotItem):
         self.data_list = []
         self.data_list_x_sorted = []
         self.plot = plot
-        self.dictValues = {'first': {'col1': 'Frequence', 'col2': 'Niveau'}}
+        self.dictValues = {}
 
         self.vline = pg.InfiniteLine(
             angle=90, movable=False, pen=pg.mkPen('#000'))
@@ -190,8 +190,8 @@ class Crosshair(pg.PlotItem):
             self.plot.addItem(roi)
 
             self.dictValues[roi] = {
-                'Frequence': f"{x_log}",
-                'Level': f"{y_value}"
+                'Frequence': f"{x_log:.2e}",
+                'Level': f"{y_value:.2f}"
             }
             print(self.dictValues)
 

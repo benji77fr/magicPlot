@@ -389,7 +389,9 @@ class MainWindow(QtGui.QMainWindow):
         fileName, _ = QtWidgets.QFileDialog.getSaveFileName(self,
                                                             "Exporter un tracer", "",
                                                             "Jpeg Files (*.jpg);; PNG Files (*.png)")
-
+        exporter.parameters()[
+            'height'] = 1080
+        exporter.parameters()['antialias'] = True
         exporter.export(fileName)
 
         self.printPDF(fileName)
