@@ -190,8 +190,8 @@ class Crosshair(pg.PlotItem):
             self.plot.addItem(roi)
 
             self.dictValues[roi] = {
-                'Frequence': f"{x_log:.2e}",
-                'Level': f"{y_value:.2f}"
+                'Frequence (Hz)': f"{x_log:.2e}",
+                'Level (dBµV)': f"{y_value:.2f}"
             }
             print(self.dictValues)
 

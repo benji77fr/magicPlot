@@ -367,21 +367,25 @@ class MainWindow(QtGui.QMainWindow):
                                    'frequence', 'level'])
 
     def printPDF(self, plotImage):
-        # fileName, _ = QtWidgets.QFileDialog.getSaveFileName(
-        #     self, "Export PDF", None, "PDF files (.pdf);;All Files()"
-        # )
-        # if fileName:
-        #     if QtCore.QFileInfo(fileName).suffix() == "":
-        #         fileName += ".pdf"
+        fileName, _ = QtWidgets.QFileDialog.getSaveFileName(
+            self, "Export PDF", None, "PDF files (.pdf);;All Files()"
+        )
+        if fileName:
+            if QtCore.QFileInfo(fileName).suffix() == "":
+                fileName += ".pdf"
 
         # self.pdfExporter.export(fileName)
 
-        pdf = PDF(plot=plotImage,
+        # pdf = PDF(plot=plotImage,
+        #           data=self.mouse_tracking.dictValues, title='Test')
+        # pdf.add_page(orientation='L')
+        # pdf.set_font("Helvetica", size=10)
+        # pdf.print_result()
+        # pdf.output('test.pdf')
+
+        pdf = PDF(fileName=fileName, plot=plotImage,
                   data=self.mouse_tracking.dictValues, title='Test')
-        pdf.add_page(orientation='L')
-        pdf.set_font("Helvetica", size=10)
-        pdf.print_result()
-        pdf.output('test.pdf')
+        pdf.build_pdf()
 
     def exportImg(self):
         exporter = exporters.ImageExporter(self.graph.plot_item)

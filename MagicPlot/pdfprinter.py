@@ -44,33 +44,60 @@ from reportlab.lib.units import cm
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.platypus import Paragraph, Frame, Table, Spacer, TableStyle
+from PIL import Image
 import pandas as pd
 
-dict = {'first': {'Frequence': 'Frequence', 'Level': 'Niveau'}, 'second': {'Frequence': '37373492.172213644', 'Level': '40.512848196933724'}, 'third': {'Frequence': '108042651.82570055', 'Level': '38.6989851004103'},
-        'forth': {'Frequence': '375264820.6831262', 'Level': '45.522565320665095'}, 'fifth': {'Frequence': '655696057.7364848', 'Level': '44.78838263873895'}}
+# dict = {'second': {'Frequence': '37373492.172213644', 'Level': '40.512848196933724'}, 'third': {'Frequence': '108042651.82570055', 'Level': '38.6989851004103'},
+#         'forth': {'Frequence': '375264820.6831262', 'Level': '45.522565320665095'}, 'fifth': {'Frequence': '655696057.7364848', 'Level': '44.78838263873895'}}
 
-df = pd.DataFrame(dict)
-df = df.reset_index()
-df = df.rename(columns={"index": ""})
 
-data = [df.columns.to_list()] + df.values.tolist()
-table = Table(data)
-table.setStyle(TableStyle([
-    ('INNERGRID', (0, 0), (-1, -1), 0.25, colors.black),
-    ('BOX', (0, 0), (-1, -1), 0.25, colors.black)
-]))
+class PDF():
+    def __init__(self, fileName, plot, data, title):
+        super().__init__()
 
-table_value = [Paragraph("Valeurs relevées", getSampleStyleSheet()['Heading1']),
-               Spacer(1, 20),
-               table]
+        self.plot = plot
+        self.data = data
+        self.title = title
+        self.pdf = canvas.Canvas(fileName, pagesize=A4)
+        self.docWidth, self.docHeight = A4
 
-pdf = canvas.Canvas("test.pdf", pagesize=A4)
-pdf.translate(cm, cm)
-pdf.drawImage(r'.\ressources\images\logo_sbr.png', 2, 750, 108, 25)
-pdf.setFont('Helvetica', 20)
-pdf.drawCentredString(250, 700, "Test génération de PDF trop cool")
-pdf.drawImage(r'.\test.jpg', 2, 400, 530, 250)
+    def data_to_table(self):
+        df = pd.DataFrame(self.data)
+        df = df.T
 
-f = Frame(cm, cm, 15*cm, 9*cm)
-f.addFromList(table_value, pdf)
-pdf.save()
+        dfToList = [df.columns.to_list()] + df.values.tolist()
+        table = Table(dfToList)
+        table.setStyle(TableStyle([
+            ('INNERGRID', (0, 0), (-1, -1), 0.25, colors.black),
+            ('BOX', (0, 0), (-1, -1), 0.25, colors.black)
+        ]))
+
+        self.table_value = [Paragraph("Valeurs relevées", getSampleStyleSheet()['Heading1']),
+                            Spacer(1, 20),
+                            table]
+
+    def construct_pdf(self):
+        self.pdf.translate(cm, cm)
+
+        imageDfile = Image.open(self.plot)
+        imageWidth, imageHeight = imageDfile.size
+        imageAspect = imageHeight / float(imageWidth)
+
+        printWidth = self.docWidth
+        printHeight = self.docHeight * imageAspect
+
+        self.pdf.drawImage(
+            r'.\ressources\images\logo_sbr.png', 2, 750, 108, 25)
+        self.pdf.setFont('Helvetica', 20)
+        self.pdf.drawCentredString(
+            250, 700, self.title)
+        self.pdf.drawImage(self.plot, 2, 400, 700, 350,
+                           preserveAspectRatio=True)
+
+        f = Frame(cm, cm, 15*cm, 9*cm)
+        f.addFromList(self.table_value, self.pdf)
+        self.pdf.save()
+
+    def build_pdf(self):
+        self.data_to_table()
+        self.construct_pdf()
