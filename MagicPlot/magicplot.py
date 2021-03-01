@@ -398,7 +398,7 @@ class MainWindow(QtGui.QMainWindow):
         exporter.parameters()['antialias'] = True
         exporter.export(fileName)
 
-        self.printPDF(fileName)
+        # self.printPDF(fileName)
 
     def change_background_color(self, choice: str):
         if choice == "white":

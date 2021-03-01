@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>{{ title }}</title>
+    </head>
+    <body>
+        <header class="container">
+            <div class="row">
+                <div class="col">
+                    <img src={{ logo }}>
+                </div>
+                <div class="col">
+                    <p class="h1 titre">{{ title }}</p>
+                </div>
+            </div>
+        </header>
+        <div class="container">
+            <div class="line"></div>
+                <div class="row courbe">
+                    <p class="h3">Courbe résultat</p>
+                </div>
+            <div class="row">
+                <img src={{ plot }} class="img-fluid"  alt="">
+            </div>
+        </div>
+        <div class="container">
+            <div class="row tableau">
+                <p class="h3">Valeurs relevées</p>
+            </div>
+            <div class="row">
+                {{ values }}
+            </div>
+        </div>
+
+    </body>
+</html>
