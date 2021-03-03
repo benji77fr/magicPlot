@@ -17,11 +17,11 @@ import os
 
 import pyqtgraph as pg
 from pyqtgraph import exporters
+from weasyprint import text
 
 from graph import CustomPlotWidget
 from mouse_tracking import Crosshair
 from csvMod import csvMod
-from PDFExporter import PDFExporter
 from pdfprinter import PDF
 
 
@@ -42,7 +42,6 @@ class MainWindow(QtGui.QMainWindow):
         self.graph = CustomPlotWidget()
         self.csvmod = csvMod()
         self.mouse_tracking = Crosshair(self.graph.plot_item)
-        self.pdfExporter = PDFExporter(self.graph.plot_item.scene())
 
         # Création du Layout et du Widget principal
         layout = QtGui.QGridLayout()
@@ -116,9 +115,9 @@ class MainWindow(QtGui.QMainWindow):
             qta.icon('fa5s.file-csv', color='#3a9c55'), "Traiter les fichiers", self)
         actionCSV.triggered.connect(self.csvmod.open_file)
 
-        exportImg = QtWidgets.QAction(
+        export_image = QtWidgets.QAction(
             qta.icon('mdi.file-export-outline'), "Exporter", self)
-        exportImg.triggered.connect(self.exportImg)
+        export_image.triggered.connect(self.export_image)
 
         clearPlot = QtWidgets.QAction("Nettoyer la zone de tracer", self)
         clearPlot.triggered.connect(self.plot_clear)
@@ -145,7 +144,7 @@ class MainWindow(QtGui.QMainWindow):
         fileMenu.addAction(actionOpen)
         fileMenu.addAction(actionSaveMax)
         fileMenu.addAction(actionCSV)
-        fileMenu.addAction(exportImg)
+        fileMenu.addAction(export_image)
         plotMenu = menubar.addMenu('&Tracer')
         plotMenu.addAction(actionPlot)
         plotMenu.addAction(actionPlotMax)
@@ -172,7 +171,7 @@ class MainWindow(QtGui.QMainWindow):
         fileToolBar = self.addToolBar("Fichier")
         fileToolBar.addAction(actionCSV)
         fileToolBar.addAction(actionOpen)
-        fileToolBar.addAction(exportImg)
+        fileToolBar.addAction(export_image)
         fileToolBar.addSeparator()
         fileToolBar.addAction(changeColor)
 
@@ -366,49 +365,43 @@ class MainWindow(QtGui.QMainWindow):
         self.max_df = pd.DataFrame(list(zip(data_x, data_y)), columns=[
                                    'frequence', 'level'])
 
-    def printPDF(self, plotImage):
+    def print_pdf(self, plotImage):
         fileName, _ = QtWidgets.QFileDialog.getSaveFileName(
             self, "Export PDF", None, "PDF files (.pdf);;All Files()"
         )
         if fileName:
             if QtCore.QFileInfo(fileName).suffix() == "":
                 fileName += ".pdf"
+        
+        text, _ = QtWidgets.QInputDialog.getText(self, "Titre du PDF", "Titre", QtWidgets.QLineEdit.Normal, "")
 
-        # self.pdfExporter.export(fileName)
+        pdf = PDF(plot=plotImage, data=self.mouse_tracking.dictValues, title=text, fileName=fileName)
+        pdf.generate_document()
 
-        # pdf = PDF(plot=plotImage,
-        #           data=self.mouse_tracking.dictValues, title='Test')
-        # pdf.add_page(orientation='L')
-        # pdf.set_font("Helvetica", size=10)
-        # pdf.print_result()
-        # pdf.output('test.pdf')
-
-        pdf = PDF(fileName=fileName, plot=plotImage,
-                  data=self.mouse_tracking.dictValues, title='Test')
-        pdf.build_pdf()
-
-    def exportImg(self):
+    def export_image(self):
         exporter = exporters.ImageExporter(self.graph.plot_item)
 
         fileName, _ = QtWidgets.QFileDialog.getSaveFileName(self,
                                                             "Exporter un tracer", "",
                                                             "Jpeg Files (*.jpg);; PNG Files (*.png)")
         exporter.parameters()[
-            'height'] = 1080
+            'width'] = 1600
         exporter.parameters()['antialias'] = True
         exporter.export(fileName)
 
-        # self.printPDF(fileName)
+        self.print_pdf(fileName)
 
     def change_background_color(self, choice: str):
         if choice == "white":
             self.graph.plot_widget.setBackground(pg.mkColor('#FFF'))
             self.mouse_tracking.hline.setPen({'color': "#000"})
             self.mouse_tracking.vline.setPen({'color': "#000"})
+            self.mouse_tracking.text.setColor("#000")
         if choice == "black":
             self.graph.plot_widget.setBackground(pg.mkColor('#000'))
             self.mouse_tracking.hline.setPen({'color': "#FFF"})
             self.mouse_tracking.vline.setPen({'colr': "#FFF"})
+            self.mouse_tracking.text.setColor("#FFF")
 
     def change_plot_color(self):
         color = QtGui.QColorDialog.getColor()

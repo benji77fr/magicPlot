@@ -177,12 +177,11 @@ class Crosshair(pg.PlotItem):
             arrow = pg.ArrowItem(pos=(0.0005, 0.1))
             arrow.setParentItem(roi)
 
-            text = pg.TextItem(
-                html=(f'<span style="color: #FFF;">'
-                      + 'Frequence: {:.2e} Hz<br> Niveau: {:.2f} dBµV'.format(x_log, y_value)
-                      + f'</span>'),
+            self.text = pg.TextItem(color="#000",
+                text='Frequence: {:.2e} Hz \nNiveau: {:.2f} dBµV'.format(x_log, y_value),
                 anchor=(0, 1))
-            text.setParentItem(roi)
+            self.text.setParentItem(roi)
+            
 
             roi.sigClicked.connect(self.roi_click)
             roi.sigRemoveRequested.connect(self.roi_remove)
@@ -190,10 +189,9 @@ class Crosshair(pg.PlotItem):
             self.plot.addItem(roi)
 
             self.dictValues[roi] = {
-                'Frequence (Hz)': f"{x_log:.2e}",
-                'Level (dBµV)': f"{y_value:.2f}"
+                'Frequence': f"{x_log:.2e}",
+                'Level': f"{y_value:.2f}"
             }
-            print(self.dictValues)
 
     def roi_remove(self, roi):
         self.plot.removeItem(roi)

@@ -98,26 +98,39 @@
 #         self.data_to_table()
 #         self.construct_pdf()
 
+# dict = {'second': {'Frequence': '37373492.172213644', 'Level': '40.512848196933724'}, 'third': {'Frequence': '108042651.82570055', 'Level': '38.6989851004103'},
+#         'forth': {'Frequence': '375264820.6831262', 'Level': '45.522565320665095'}, 'fifth': {'Frequence': '655696057.7364848', 'Level': '44.78838263873895'}}
+
 
 import jinja2
 import pandas as pd
 from weasyprint import HTML
 
-templateLoader = jinja2.FileSystemLoader(searchpath="./templates")
-templateEnv = jinja2.Environment(loader=templateLoader)
 TEMPLATE_FILE = "report.html"
-template = templateEnv.get_template(TEMPLATE_FILE)
+class PDF:
+    def __init__(self, plot, data, title, fileName):
+        super().__init__()
 
-dict = {'second': {'Frequence': '37373492.172213644', 'Level': '40.512848196933724'}, 'third': {'Frequence': '108042651.82570055', 'Level': '38.6989851004103'},
-        'forth': {'Frequence': '375264820.6831262', 'Level': '45.522565320665095'}, 'fifth': {'Frequence': '655696057.7364848', 'Level': '44.78838263873895'}}
+        self.plot = plot
+        self.data = data
+        self.title = title
+        self.fileName = fileName
 
-df = pd.DataFrame(dict)
-df = df.T
+        self.df = pd.DataFrame(self.data)
+        self.df = self.df.T
+    
+    def html_to_pdf(self, html_out):
+        html_out = html_out
+        HTML(string=html_out, base_url='.').write_pdf(self.fileName, stylesheets=["./templates/report.css", "./templates/bootstrap.min.css"])
 
+    def generate_document(self):
+        templateLoader = jinja2.FileSystemLoader(searchpath="./templates")
+        templateEnv = jinja2.Environment(loader=templateLoader)
+        template = templateEnv.get_template(TEMPLATE_FILE)
 
-html_out = template.render(title="Titre Test PDF générer !!!!",
-                logo="./ressources/images/logo_sbr.png",
-                plot="./test.jpg",
-                values=df.to_html())
+        html_out = template.render(title=self.title,
+                        logo="./ressources/images/logo_sbr.png",
+                        plot=self.plot,
+                        values=self.df)
 
-HTML(string=html_out, base_url='.').write_pdf("report.pdf", stylesheets=["./templates/report.css", "./templates/bootstrap.css"])
+        self.html_to_pdf(html_out)
