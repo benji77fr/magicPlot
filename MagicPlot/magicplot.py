@@ -17,7 +17,6 @@ import os
 
 import pyqtgraph as pg
 from pyqtgraph import exporters
-from weasyprint import text
 
 from graph import CustomPlotWidget
 from mouse_tracking import Crosshair
