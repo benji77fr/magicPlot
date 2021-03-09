@@ -374,7 +374,7 @@ class MainWindow(QtGui.QMainWindow):
                 fileName += ".pdf"
         
         text, _ = QtWidgets.QInputDialog.getText(self, "Titre du PDF", "Titre", QtWidgets.QLineEdit.Normal, "")
-
+        print(plotImage)
         pdf = PDF(plot=plotImage, data=self.mouse_tracking.dictValues, title=text, fileName=fileName)
         pdf.generate_document()
 
