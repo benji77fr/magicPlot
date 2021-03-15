@@ -8,7 +8,7 @@ Author: Benjamin Girard
 Copyright: SoftBank Robotics 2020
 """
 
-from PyQt5 import QtWidgets, QtCore, QtGui
+from PyQt5 import QtWidgets
 
 import pandas as pd
 import zipfile
@@ -16,11 +16,11 @@ import os
 from pathlib import Path
 
 
-class csvMod():
+class CSVMod():
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self):
 
-        super(csvMod, self).__init__(*args, **kwargs)
+        super(CSVMod, self).__init__()
         self.extChanged = []
 
     def open_file(self):

@@ -18,10 +18,10 @@ import os
 import pyqtgraph as pg
 from pyqtgraph import exporters
 
-from graph import CustomPlotWidget
-from mouse_tracking import Crosshair
-from csvMod import csvMod
-from pdfprinter import PDF
+from .graph import CustomPlotWidget
+from .mousetracking import Crosshair
+from .csvmod import CSVMod
+from .pdfprinter import PDF
 
 
 class MainWindow(QtGui.QMainWindow):
@@ -34,20 +34,27 @@ class MainWindow(QtGui.QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
 
-        # Titre de la Fênetre principale
+        self.setupUI()
+
+        self.sourceFiles = []
+        self.selectedPlot = []
+        self.curves = {}
+        self.filesPath = ""
+        self.maxDf = pd.DataFrame()
+
+        self.listPlot.itemChanged.connect(self.checked_plot)
+
+    def setupUI(self):
         self.setWindowTitle("Magic Plot for CEM")
 
-        # Création d'un objet CustomPlotWidget
         self.graph = CustomPlotWidget()
-        self.csvmod = csvMod()
-        self.mouse_tracking = Crosshair(self.graph.plot_item)
+        self.csvmod = CSVMod()
+        self.mouseTracking = Crosshair(self.graph.plot_item)
 
-        # Création du Layout et du Widget principal
         layout = QtGui.QGridLayout()
         widget = QtWidgets.QWidget()
         widget.setLayout(layout)
 
-        # Création des actions menu
         actionOpen = QtWidgets.QAction(
             qta.icon('fa.folder-open', color='#ffc47d'), "&Ouvrir", self)
         actionOpen.setShortcut('Ctrl+O')
@@ -91,6 +98,14 @@ class MainWindow(QtGui.QMainWindow):
             "Ajoute le gabarit de la classe B à 10m")
         actionAddClasseB10.triggered.connect(
             lambda: self.graph.add_gabarit('B10'))
+
+        actionAddClasseBECAVG = QtWidgets.QAction("Classe B EC Moyenne", self)
+        actionAddClasseBECAVG.setStatusTip("Ajoute le gabarit de la Classe B en EC valeur moyenne")
+        actionAddClasseBECAVG.triggered.connect(lambda: self.graph.add_gabarit('BECAVG'))
+
+        actionAddClasseBECQPK = QtWidgets.QAction("Classe B EC QPeak", self)
+        actionAddClasseBECQPK.setStatusTip("Ajoute le gabarit de la Classe B en EC valeur QPeak")
+        actionAddClasseBECQPK.triggered.connect(lambda: self.graph.add_gabarit('BECQPK'))
 
         rangeER = QtWidgets.QAction("Mesure ER", self)
         rangeER.setStatusTip(
@@ -137,7 +152,6 @@ class MainWindow(QtGui.QMainWindow):
                                         {'scale_factor': 1.2}, {'color': 'red'}]), "Changer la couleur d'une courbe", self)
         changeColor.triggered.connect(self.change_plot_color)
 
-        # Création du Menu
         menubar = self.menuBar()
         fileMenu = menubar.addMenu('&Fichier')
         fileMenu.addAction(actionOpen)
@@ -154,6 +168,8 @@ class MainWindow(QtGui.QMainWindow):
         addGabaritMenu.addAction(actionAddClasseA10)
         addGabaritMenu.addAction(actionAddClasseB)
         addGabaritMenu.addAction(actionAddClasseB10)
+        addGabaritMenu.addAction(actionAddClasseBECAVG)
+        addGabaritMenu.addAction(actionAddClasseBECQPK)
         removeGabaritMenu = plotMenu.addMenu('Enlever gabarit')
         removeGabaritMenu.addAction(actionRemoveCA)
         removeGabaritMenu.addAction(actionRemoveCB)
@@ -165,8 +181,6 @@ class MainWindow(QtGui.QMainWindow):
         changeBackground.addAction(actionBackgroundWhite)
         changeBackground.addAction(actionBackgroundBlack)
 
-        # Création Toolbar
-
         fileToolBar = self.addToolBar("Fichier")
         fileToolBar.addAction(actionCSV)
         fileToolBar.addAction(actionOpen)
@@ -174,7 +188,6 @@ class MainWindow(QtGui.QMainWindow):
         fileToolBar.addSeparator()
         fileToolBar.addAction(changeColor)
 
-        # Création des Labels pour les listWidgets
         self.labelPlot = QtWidgets.QLabel("Liste de courbes")
         fontLabel = QtGui.QFont()
         fontLabel.setPointSize(15)
@@ -182,38 +195,19 @@ class MainWindow(QtGui.QMainWindow):
         self.labelPlot.setFont(fontLabel)
         self.labelPlot.setAlignment(QtCore.Qt.AlignCenter)
 
-        # Création des listWidgets qui contiendront les fichiers
-        # et les plots
         self.listPlot = QtWidgets.QListWidget()
 
-        # Création de la partie gauche du layout
-        # Ce layout contient les Labels et les listWidget
         layoutLeft = QtGui.QVBoxLayout()
         layoutLeft.addWidget(self.labelPlot)
         layoutLeft.addWidget(self.listPlot)
 
-        # Ajout des parties gauche et droite dans
-        # le layout principal
         layout.addLayout(layoutLeft, 0, 0)
         layout.addWidget(self.graph, 0, 1)
         layout.setColumnStretch(1, 3)
 
-        # Création d'une status bar
         self.setStatusBar(QtWidgets.QStatusBar(self))
 
-        # Définition du widget central de la Mainwindow
-        # par notre widget principal
         self.setCentralWidget(widget)
-
-        self.sourceFiles = []
-        self.selectedPlot = []
-        self.curves = {}
-        self.filesPath = ""
-        self.max_df = pd.DataFrame()
-
-        # Signal émit quand on coche/décoche une case dans
-        # les ListWidget
-        self.listPlot.itemChanged.connect(self.checked_plot)
 
     def populate_list_of_plot(self):
         '''
@@ -247,11 +241,9 @@ class MainWindow(QtGui.QMainWindow):
                 if f not in self.sourceFiles:
                     self.sourceFiles.append(f)
 
-        # self.populate_list_of_files(self.sourceFiles)
         self.read_and_plot(self.sourceFiles)
-
         self.sourceFiles.clear()
-
+        
     def checked_plot(self):
         '''
         Fonction appelée lorque l'on coche/décoche un élément de
@@ -265,11 +257,11 @@ class MainWindow(QtGui.QMainWindow):
             if item.checkState() == QtCore.Qt.Checked and item not in self.selectedPlot:
                 self.selectedPlot.append(item)
                 self.graph.plot_item.addItem(self.curves[item.text()])
-                self.mouse_tracking.update()
+                self.mouseTracking.update()
             if item.checkState() == QtCore.Qt.Unchecked and item in self.selectedPlot:
                 self.selectedPlot.remove(item)
                 self.graph.plot_item.removeItem(self.curves[item.text()])
-                self.mouse_tracking.update()
+                self.mouseTracking.update()
 
     def read_and_plot(self, sourceFiles):
         '''
@@ -294,18 +286,18 @@ class MainWindow(QtGui.QMainWindow):
             indexColor = indexColor + 2
 
         self.populate_list_of_plot()
-        self.mouse_tracking.update()
+        self.mouseTracking.update()
 
     def plot_clear(self):
         self.graph.plot_item.clear()
         self.graph.plot_item.addItem(
-            self.mouse_tracking.vline, ignoreBounds=True)
+            self.mouseTracking.vline, ignoreBounds=True)
         self.graph.plot_item.addItem(
-            self.mouse_tracking.hline, ignoreBounds=True)
+            self.mouseTracking.hline, ignoreBounds=True)
         self.graph.plot_item.addItem(
-            self.mouse_tracking.labelx, ignoreBounds=True)
+            self.mouseTracking.labelx, ignoreBounds=True)
         self.graph.plot_item.addItem(
-            self.mouse_tracking.labely, ignoreBounds=True)
+            self.mouseTracking.labely, ignoreBounds=True)
 
     def clear_file_and_plot(self):
         self.selectedPlot.clear()
@@ -319,7 +311,7 @@ class MainWindow(QtGui.QMainWindow):
         fileName, _ = QtWidgets.QFileDialog.getSaveFileName(self,
                                                             "Enregistrer un fichier CSV", "",
                                                             "CSV Files (*.csv)")
-        self.max_df.to_csv(fileName, index=False, header=True, sep=";")
+        self.maxDf.to_csv(fileName, index=False, header=True, sep=";")
 
     def find_max(self):
         '''
@@ -327,7 +319,7 @@ class MainWindow(QtGui.QMainWindow):
         en comparant X fichier
         '''
         isFirstFile = True
-        list_of_dfs = []
+        listOfDfs = []
         sourceFiles = []
 
         fileName, _ = QtWidgets.QFileDialog.getOpenFileNames(self,
@@ -342,14 +334,14 @@ class MainWindow(QtGui.QMainWindow):
             if isFirstFile:
                 df = pd.read_csv(
                     (os.path.dirname(itemRead) + "/" + os.path.basename(itemRead)), sep=";")
-                list_of_dfs.append(df)
+                listOfDfs.append(df)
                 isFirstFile = False
             else:
                 df = pd.read_csv(
                     (os.path.dirname(itemRead) + "/" + os.path.basename(itemRead)), sep=";", usecols=[1])
-                list_of_dfs.append(df)
+                listOfDfs.append(df)
 
-        combine_df = pd.concat(list_of_dfs, axis=1)
+        combine_df = pd.concat(listOfDfs, axis=1)
 
         temp_df = combine_df.loc[:, 'level']
         maxLevel_df = pd.DataFrame({'level': temp_df.max(axis=1)})
@@ -361,7 +353,7 @@ class MainWindow(QtGui.QMainWindow):
 
         self.populate_list_of_plot()
 
-        self.max_df = pd.DataFrame(list(zip(data_x, data_y)), columns=[
+        self.maxDf = pd.DataFrame(list(zip(data_x, data_y)), columns=[
                                    'frequence', 'level'])
 
     def print_pdf(self, plotImage):
@@ -374,7 +366,7 @@ class MainWindow(QtGui.QMainWindow):
         
         text, _ = QtWidgets.QInputDialog.getText(self, "Titre du PDF", "Titre", QtWidgets.QLineEdit.Normal, "")
         print(plotImage)
-        pdf = PDF(plot=plotImage, data=self.mouse_tracking.dictValues, title=text, fileName=fileName)
+        pdf = PDF(plot=plotImage, data=self.mouseTracking.dictValues, title=text, fileName=fileName)
         pdf.generate_document()
 
     def export_image(self):
@@ -388,19 +380,19 @@ class MainWindow(QtGui.QMainWindow):
         exporter.parameters()['antialias'] = True
         exporter.export(fileName)
 
-        # self.print_pdf(fileName)
+        self.print_pdf(fileName)
 
     def change_background_color(self, choice: str):
         if choice == "white":
             self.graph.plot_widget.setBackground(pg.mkColor('#FFF'))
-            self.mouse_tracking.hline.setPen({'color': "#000"})
-            self.mouse_tracking.vline.setPen({'color': "#000"})
-            self.mouse_tracking.text.setColor("#000")
+            self.mouseTracking.hline.setPen({'color': "#000"})
+            self.mouseTracking.vline.setPen({'color': "#000"})
+            self.mouseTracking.text.setColor("#000")
         if choice == "black":
             self.graph.plot_widget.setBackground(pg.mkColor('#000'))
-            self.mouse_tracking.hline.setPen({'color': "#FFF"})
-            self.mouse_tracking.vline.setPen({'colr': "#FFF"})
-            self.mouse_tracking.text.setColor("#FFF")
+            self.mouseTracking.hline.setPen({'color': "#FFF"})
+            self.mouseTracking.vline.setPen({'colr': "#FFF"})
+            self.mouseTracking.text.setColor("#FFF")
 
     def change_plot_color(self):
         color = QtGui.QColorDialog.getColor()
@@ -408,14 +400,4 @@ class MainWindow(QtGui.QMainWindow):
             self.curves[item.text()].setPen(color)
 
 
-def main():
-    app = QtWidgets.QApplication(sys.argv)
 
-    window = MainWindow()
-    window.show()
-
-    sys.exit(app.exec_())
-
-
-if __name__ == "__main__":
-    main()

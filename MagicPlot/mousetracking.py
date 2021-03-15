@@ -17,7 +17,6 @@ import pyqtgraph as pg
 
 dictValues = {}
 
-
 class Crosshair(pg.PlotItem):
     '''
     Class Crosshair
