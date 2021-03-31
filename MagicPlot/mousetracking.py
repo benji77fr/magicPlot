@@ -15,7 +15,7 @@ from PyQt5 import QtCore
 from PyQt5.QtWidgets import QApplication
 import pyqtgraph as pg
 
-dictValues = {}
+dict_values = {}
 
 class Crosshair(pg.PlotItem):
     '''
@@ -35,34 +35,34 @@ class Crosshair(pg.PlotItem):
         self.data_list = []
         self.data_list_x_sorted = []
         self.plot = plot
-        self.dictValues = {}
+        self.dict_values = {}
 
-        self.vline = pg.InfiniteLine(
+        self.v_line = pg.InfiniteLine(
             angle=90, movable=False, pen=pg.mkPen('#000'))
-        self.hline = pg.InfiniteLine(
+        self.h_line = pg.InfiniteLine(
             angle=0, movable=False, pen=pg.mkPen('#000'))
 
-        self.labelx = pg.TextItem(
+        self.label_x = pg.TextItem(
             border=pg.mkPen('#ffaa55'),
             fill=pg.mkBrush(0, 0, 0, 210), anchor=(0.5, 1.0))
-        self.labely = pg.TextItem(
+        self.label_y = pg.TextItem(
             border=pg.mkPen('#ffaa55'),
             fill=pg.mkBrush(0, 0, 0, 210), anchor=(0.0, 0.5))
 
         self.label = pg.LabelItem(justify="right")
 
-        self.plot.addItem(self.vline, ignoreBounds=True)
-        self.plot.addItem(self.hline, ignoreBounds=True)
-        self.plot.addItem(self.labelx, ignoreBounds=True)
-        self.plot.addItem(self.labely, ignoreBounds=True)
+        self.plot.addItem(self.v_line, ignoreBounds=True)
+        self.plot.addItem(self.h_line, ignoreBounds=True)
+        self.plot.addItem(self.label_x, ignoreBounds=True)
+        self.plot.addItem(self.label_y, ignoreBounds=True)
 
         self.view_box = self.plot.getViewBox()
         self.vb_range = self.view_box.viewRange()
 
-        self.vline.hide()
-        self.hline.hide()
-        self.labelx.hide()
-        self.labely.hide()
+        self.v_line.hide()
+        self.h_line.hide()
+        self.label_x.hide()
+        self.label_y.hide()
 
         self.min_x = None
         self.max_x = None
@@ -152,9 +152,9 @@ class Crosshair(pg.PlotItem):
 
     def mouse_moved(self, pos):
         if self.plot.sceneBoundingRect().contains(pos):
-            mousePoint = self.view_box.mapSceneToView(pos)
-            self.mouse_pos_x = mousePoint.x()
-            self.mouse_pos_y = mousePoint.y()
+            mouse_point = self.view_box.mapSceneToView(pos)
+            self.mouse_pos_x = mouse_point.x()
+            self.mouse_pos_y = mouse_point.y()
 
             self.moved()
             self.vb_range = self.view_box.viewRange()
@@ -187,14 +187,14 @@ class Crosshair(pg.PlotItem):
 
             self.plot.addItem(roi)
 
-            self.dictValues[roi] = {
+            self.dict_values[roi] = {
                 'Frequence': f"{x_log:.2e}",
                 'Level': f"{y_value:.2f}"
             }
 
     def roi_remove(self, roi):
         self.plot.removeItem(roi)
-        self.dictValues.pop(roi)
+        self.dict_values.pop(roi)
 
     def roi_click(self, roi):
         for item in self.plot.items:
@@ -213,22 +213,22 @@ class Crosshair(pg.PlotItem):
                 y_value >= self.vb_range[1][0] and\
                 y_value <= self.vb_range[1][1]:
 
-            self.vline.show()
-            self.hline.show()
+            self.v_line.show()
+            self.h_line.show()
 
-            self.vline.setPos(x_value)
-            self.hline.setPos(y_value)
+            self.v_line.setPos(x_value)
+            self.h_line.setPos(y_value)
 
             self.set_line_text(x_value, y_value, x_value_log)
 
         else:
-            self.vline.hide()
-            self.hline.hide()
+            self.v_line.hide()
+            self.h_line.hide()
             for item in self.ycircle_list:
                 item.hide()
 
-            self.labelx.hide()
-            self.labely.hide()
+            self.label_x.hide()
+            self.label_y.hide()
             for item in self.y_text_list:
                 item.hide()
 
@@ -240,11 +240,11 @@ class Crosshair(pg.PlotItem):
         html = '<span style="color: #%s; \
                  font-size: 12px;"><mark>' %\
             pg.colorStr(pg.mkColor('#ffaa55'))[:-2]
-        self.labelx.setHtml('%s%s%s' % (html, textx, '</mark></span>'))
-        self.labely.setHtml('%s%s%s' % (html, texty, '</mark></span>'))
+        self.label_x.setHtml('%s%s%s' % (html, textx, '</mark></span>'))
+        self.label_y.setHtml('%s%s%s' % (html, texty, '</mark></span>'))
 
-        self.labelx.show()
-        self.labely.show()
+        self.label_x.show()
+        self.label_y.show()
 
-        self.labelx.setPos(x_value, self.vb_range[1][0])
-        self.labely.setPos(self.vb_range[0][0], y_value)
+        self.label_x.setPos(x_value, self.vb_range[1][0])
+        self.label_y.setPos(self.vb_range[0][0], y_value)

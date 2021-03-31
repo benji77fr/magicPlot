@@ -21,16 +21,16 @@ class CSVMod():
     def __init__(self):
 
         super(CSVMod, self).__init__()
-        self.extChanged = []
+        self.file_changed = []
 
     def open_file(self):
 
-        fileName, _ = QtWidgets.QFileDialog.getOpenFileNames(None,
+        file_name, _ = QtWidgets.QFileDialog.getOpenfile_names(None,
                                                              "Ouvrir le/les fichiers à traiter", "",
                                                              "All Files (*)")
-        self.extChanged = fileName.copy()
-        self.zip_original(fileName)
-        self.delete_cols_change_ext(self.extChanged)
+        self.file_changed = file_name.copy()
+        self.zip_original(file_name)
+        self.delete_cols_change_ext(self.file_changed)
 
     def zip_original(self, original):
 
@@ -39,15 +39,15 @@ class CSVMod():
                 zipMe.write(file, os.path.basename(file),
                             compress_type=zipfile.ZIP_DEFLATED)
 
-    def delete_cols_change_ext(self, filename):
+    def delete_cols_change_ext(self, file_name):
 
-        colName = ['frequence', 'level']
-        for file in filename:
+        col_name = ['frequence', 'level']
+        for file in file_name:
 
             p = Path(file)
-            fileRename = p.rename(p.with_suffix('.csv'))
+            file_rename = p.rename(p.with_suffix('.csv'))
 
-            df = pd.read_csv(fileRename, encoding='unicode escape', usecols=[
+            df = pd.read_csv(file_rename, encoding='unicode escape', usecols=[
                              0, 1], sep=';', header=None, skiprows=lambda x: x in range(28))
-            dfFinal = pd.DataFrame(df.values, columns=colName)
-            dfFinal.to_csv(fileRename, sep=";", index=False)
+            df_final = pd.DataFrame(df.values, columns=col_name)
+            df_final.to_csv(file_rename, sep=";", index=False)
