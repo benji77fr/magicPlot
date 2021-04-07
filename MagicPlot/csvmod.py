@@ -25,7 +25,7 @@ class CSVMod():
 
     def open_file(self):
 
-        file_name, _ = QtWidgets.QFileDialog.getOpenfile_names(None,
+        file_name, _ = QtWidgets.QFileDialog.getOpenFileNames(None,
                                                              "Ouvrir le/les fichiers à traiter", "",
                                                              "All Files (*)")
         self.file_changed = file_name.copy()

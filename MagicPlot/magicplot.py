@@ -232,7 +232,7 @@ class MainWindow(QtGui.QMainWindow):
         Ouvre une fenêtre de dialogue pour sélectionner le ou les fichiers
         à ouvrir
         '''
-        file_name, _ = QtWidgets.QFileDialog.getOpenfile_names(self,
+        file_name, _ = QtWidgets.QFileDialog.getOpenFileNames(self,
                                                              "Ouvrir un fichier CSV", "",
                                                              "All Files (*);;CSV Files (*.csv)")
 
@@ -308,7 +308,7 @@ class MainWindow(QtGui.QMainWindow):
         Sauvegarde dans un fichier CSV les valurs de la courbe générer
         en cherchant le maximum (find_max)
         '''
-        file_name, _ = QtWidgets.QFileDialog.getSavefile_name(self,
+        file_name, _ = QtWidgets.QFileDialog.getSaveFileName(self,
                                                             "Enregistrer un fichier CSV", "",
                                                             "CSV Files (*.csv)")
         self.max_df.to_csv(file_name, index=False, header=True, sep=";")
@@ -357,7 +357,7 @@ class MainWindow(QtGui.QMainWindow):
                                    'frequence', 'level'])
 
     def print_pdf(self, plotImage):
-        file_name, _ = QtWidgets.QFileDialog.getSavefile_name(
+        file_name, _ = QtWidgets.QFileDialog.getSaveFileName(
             self, "Export PDF", None, "PDF files (.pdf);;All Files()"
         )
         if file_name:
@@ -372,7 +372,7 @@ class MainWindow(QtGui.QMainWindow):
     def export_image(self):
         exporter = exporters.ImageExporter(self.graph.plot_item)
 
-        file_name, _ = QtWidgets.QFileDialog.getSavefile_name(self,
+        file_name, _ = QtWidgets.QFileDialog.getSaveFileName(self,
                                                             "Exporter un tracer", "",
                                                             "Jpeg Files (*.jpg);; PNG Files (*.png)")
         exporter.parameters()[
