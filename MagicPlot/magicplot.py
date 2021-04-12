@@ -356,7 +356,18 @@ class MainWindow(QtGui.QMainWindow):
         self.max_df = pd.DataFrame(list(zip(data_x, data_y)), columns=[
                                    'frequence', 'level'])
 
-    def print_pdf(self, plotImage):
+    def print_pdf(self):
+        
+        exporter = exporters.ImageExporter(self.graph.plot_item)
+
+        file_image, _ = QtWidgets.QFileDialog.getSaveFileName(self,
+                                                            "Exporter un tracer", "",
+                                                            "Jpeg Files (*.jpg);; PNG Files (*.png)")
+        exporter.parameters()[
+            'width'] = 1600
+        exporter.parameters()['antialias'] = True
+        exporter.export(file_image)
+
         file_name, _ = QtWidgets.QFileDialog.getSaveFileName(
             self, "Export PDF", None, "PDF files (.pdf);;All Files()"
         )
@@ -365,9 +376,9 @@ class MainWindow(QtGui.QMainWindow):
                 file_name += ".pdf"
         
         text, _ = QtWidgets.QInputDialog.getText(self, "Titre du PDF", "Titre", QtWidgets.QLineEdit.Normal, "")
-        print(plotImage)
-        pdf = PDF(plot=plotImage, data=self.mouse_tracking.dictValues, title=text, file_name=file_name)
+        pdf = PDF(plot=file_image, data=self.mouse_tracking.dictValues, title=text, file_name=file_name)
         pdf.generate_document()
+
 
     def export_image(self):
         exporter = exporters.ImageExporter(self.graph.plot_item)
@@ -379,8 +390,6 @@ class MainWindow(QtGui.QMainWindow):
             'width'] = 1600
         exporter.parameters()['antialias'] = True
         exporter.export(file_name)
-
-        # self.print_pdf(file_name)
 
     def change_background_color(self, choice: str):
         if choice == "white":
