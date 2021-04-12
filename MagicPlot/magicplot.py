@@ -130,8 +130,11 @@ class MainWindow(QtGui.QMainWindow):
         action_CSV.triggered.connect(self.csv_mod.open_file)
 
         export_image = QtWidgets.QAction(
-            qta.icon('mdi.file-export-outline'), "Exporter", self)
+            qta.icon('mdi.file-export-outline'), "Exporter image", self)
         export_image.triggered.connect(self.export_image)
+
+        export_pdf = QtWidgets.QAction(qta.icon('fa5.file-pdf'), "Exporter résultat en PDF", self)
+        export_pdf.triggered.connect(self.print_pdf)
 
         clear_plot = QtWidgets.QAction("Nettoyer la zone de tracer", self)
         clear_plot.triggered.connect(self.plot_clear)
@@ -158,6 +161,7 @@ class MainWindow(QtGui.QMainWindow):
         file_menu.addAction(action_save_max)
         file_menu.addAction(action_CSV)
         file_menu.addAction(export_image)
+        file_menu.addAction(export_pdf)
         plot_menu = menu_bar.addMenu('&Tracer')
         plot_menu.addAction(action_plot)
         plot_menu.addAction(action_plotMax)
@@ -185,6 +189,7 @@ class MainWindow(QtGui.QMainWindow):
         file_tool_bar.addAction(action_CSV)
         file_tool_bar.addAction(action_open)
         file_tool_bar.addAction(export_image)
+        file_tool_bar.addAction(export_pdf)
         file_tool_bar.addSeparator()
         file_tool_bar.addAction(change_color)
 
