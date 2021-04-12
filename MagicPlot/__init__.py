@@ -1,3 +1,3 @@
 from MagicPlot import *
 
-__version__ = "beta-1"
+__version__ = "v1.0.0 RC"

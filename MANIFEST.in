@@ -1,0 +1,3 @@
+include *.md
+recursive-include templates *.html *.css
+recursive-include ressources/images *.png

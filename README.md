@@ -21,7 +21,7 @@ Le but de ce programme est de pouvoir traiter rapidement et facilement les mesur
 - Plaçage d'un marqueur via le curseur de la souris (clique aux coordonées)
 
 
-### En cours de dev
+### Opérationel mais besoin d'affinage
 
 - Générer un PDF avec un screenshot et le un tableau de valeur correspondant aux marqueur
 
