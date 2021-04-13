@@ -391,6 +391,10 @@ class MainWindow(QtGui.QMainWindow):
         file_name, _ = QtWidgets.QFileDialog.getSaveFileName(self,
                                                             "Exporter un tracer", "",
                                                             "Jpeg Files (*.jpg);; PNG Files (*.png)")
+        if file_name:
+            if QtCore.QFileInfo(file_name).suffix() == "":
+                file_name += ".jpg"
+
         exporter.parameters()[
             'width'] = 1600
         exporter.parameters()['antialias'] = True
