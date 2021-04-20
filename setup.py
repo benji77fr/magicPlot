@@ -22,7 +22,7 @@ setup(
     url = 'https://gitlab.aldebaran.lan/bgirard1/magicPlot',
     entry_points = {
         'console_scripts': [
-            'magicplot = MagicPlot.main:main',
+            'magicplot = MagicPlot.__main__:main',
         ],
     }
 )
