@@ -15,7 +15,7 @@ setup(
                         'pyqtgraph==0.12.1',
                         'qtawesome==1.0.2', 
                         'pandas==1.2.3', 
-                        'jinja2==2.11.2',
+                        'jinja2==2.11.3',
                         'weasyprint==52.4'
     ],
     include_package_data = True,
