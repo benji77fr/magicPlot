@@ -2,45 +2,39 @@
     <meta charset="UTF-8">
     <link rel="stylesheet" href="./templates/bootstrap.min.css">
     <link rel="stylesheet" href="./templates/report.css">
-    <title>{{ title }}</title>
+    <title>test</title>
 </head>
 <body>
     <header class="container">
         <div class="row">
             <div class="col">
-                <img src={{ logo }}>
+                <img src=./ressources/images/logo_sbr.png>
             </div>
             <div class="col">
-                <p class="h1 titre">{{ title }}</p>
+                <p class="h1 titre">test</p>
             </div>
         </div>
     </header>
     <div class="container">
         <div class="line"></div>
             <div class="row courbe">
-                <p class="h3">Courbe rÃ©sultat</p>
+                <p class="h3">Courbe résultat</p>
             </div>
         <div class="row">
-            <img src={{ plot }} style="width: 60%; height: auto;">
+            <img src=C:/Users/Benjibro/Documents/Dev/magicPlot/test.jpg style="width: 60%; height: auto;">
         </div>
     </div>        <div class="container">
         <div class="row tableau">
-            <p class="h3">Valeurs relevÃ©es</p>
+            <p class="h3">Valeurs relevées</p>
         </div>
         <div class="row">
             <table class="table table-bordered">
                 <tr>
                     <th>#</th>
-                    <th>FrÃ©quence (Hz)</th>
-                    <th>Niveau (dBÂµV)</th>
+                    <th>Fréquence (Hz)</th>
+                    <th>Niveau (dBµV)</th>
                 </tr>
-                {% for item, value in values.iterrows() %}
-                    <tr>
-                        <th>{{ loop.index }}</th>
-                        <td>{{ value['Frequence'] }}</td>
-                        <td>{{ value['Level'] }}</td>           
-                    </tr>
-                {% endfor %}
+                
             </table>
         </div>
     </div>

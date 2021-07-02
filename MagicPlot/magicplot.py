@@ -21,7 +21,7 @@ from pyqtgraph import exporters
 from graph import CustomPlotWidget
 from mousetracking import Crosshair
 from csvmod import CSVMod
-# from .pdfprinter import PDF
+from reportgenerator import Report
 
 
 class MainWindow(QtGui.QMainWindow):
@@ -140,11 +140,12 @@ class MainWindow(QtGui.QMainWindow):
             qta.icon('mdi.file-export-outline'), "Exporter image", self)
         export_image.triggered.connect(self.export_image)
 
-        #export_pdf = QtWidgets.QAction(qta.icon('fa5.file-pdf'), "Exporter résultat en PDF", self)
-        # export_pdf.triggered.connect(self.print_pdf)
-
         clear_plot = QtWidgets.QAction("Nettoyer la zone de tracer", self)
         clear_plot.triggered.connect(self.plot_clear)
+
+        export_doc = QtWidgets.QAction(
+            qta.icon('fa5.file-pdf'), "Exporter résultat en PDF", self)
+        export_doc.triggered.connect(self.print_doc)
 
         clear_selection = QtWidgets.QAction(
             "Nettoyer la liste des tracer", self)
@@ -168,7 +169,7 @@ class MainWindow(QtGui.QMainWindow):
         file_menu.addAction(action_save_max)
         file_menu.addAction(action_CSV)
         file_menu.addAction(export_image)
-        # file_menu.addAction(export_pdf)
+        file_menu.addAction(export_doc)
         plot_menu = menu_bar.addMenu('&Tracer')
         plot_menu.addAction(action_plot)
         plot_menu.addAction(action_plotMax)
@@ -196,7 +197,6 @@ class MainWindow(QtGui.QMainWindow):
         file_tool_bar.addAction(action_CSV)
         file_tool_bar.addAction(action_open)
         file_tool_bar.addAction(export_image)
-        # file_tool_bar.addAction(export_pdf)
         file_tool_bar.addSeparator()
         file_tool_bar.addAction(change_color)
 
@@ -368,28 +368,27 @@ class MainWindow(QtGui.QMainWindow):
         self.max_df = pd.DataFrame(list(zip(data_x, data_y)), columns=[
                                    'frequence', 'level'])
 
-    # def print_pdf(self):
+    def print_doc(self):
 
-    #     exporter = exporters.ImageExporter(self.graph.plot_item)
+        exporter = exporters.ImageExporter(self.graph.plot_item)
 
-    #     file_image, _ = QtWidgets.QFileDialog.getSaveFileName(self,
-    #                                                         "Exporter un tracer", "",
-    #                                                         "Jpeg Files (*.jpg);; PNG Files (*.png)")
-    #     exporter.parameters()[
-    #         'width'] = 1600
-    #     exporter.parameters()['antialias'] = True
-    #     exporter.export(file_image)
+        file_image, _ = QtWidgets.QFileDialog.getSaveFileName(self,
+                                                              "Exporter un tracer", "",
+                                                              "Jpeg Files (*.jpg);; PNG Files (*.png)")
+        exporter.parameters()[
+            'width'] = 1600
+        exporter.parameters()['antialias'] = True
+        exporter.export(file_image)
 
-    #     file_name, _ = QtWidgets.QFileDialog.getSaveFileName(
-    #         self, "Export PDF", None, "PDF files (.pdf);;All Files()"
-    #     )
-    #     if file_name:
-    #         if QtCore.QFileInfo(file_name).suffix() == "":
-    #             file_name += ".pdf"
+        file_name, _ = QtWidgets.QFileDialog.getSaveFileName(
+            self, "Export docx", None, "docx files (.docx);;All Files()"
+        )
 
-    #     text, _ = QtWidgets.QInputDialog.getText(self, "Titre du PDF", "Titre", QtWidgets.QLineEdit.Normal, "")
-    #     pdf = PDF(plot=file_image, data=self.mouse_tracking.dictValues, title=text, file_name=file_name)
-    #     pdf.generate_document()
+        text, _ = QtWidgets.QInputDialog.getText(
+            self, "Titre du PDF", "Titre", QtWidgets.QLineEdit.Normal, "")
+        doc = Report(plot=file_image, data=self.mouse_tracking.dict_values,
+                     title=text, file_name=file_name)
+        doc.generate_document()
 
     def export_image(self):
         exporter = exporters.ImageExporter(self.graph.plot_item)
