@@ -18,10 +18,10 @@ import os
 import pyqtgraph as pg
 from pyqtgraph import exporters
 
-from .graph import CustomPlotWidget
-from .mousetracking import Crosshair
-from .csvmod import CSVMod
-from .pdfprinter import PDF
+from graph import CustomPlotWidget
+from mousetracking import Crosshair
+from csvmod import CSVMod
+# from .pdfprinter import PDF
 
 
 class MainWindow(QtGui.QMainWindow):
@@ -78,12 +78,14 @@ class MainWindow(QtGui.QMainWindow):
         action_plotMax.triggered.connect(self.find_max)
 
         action_add_classeA = QtWidgets.QAction("Classe A à 1m", self)
-        action_add_classeA.setStatusTip("Ajoute le gabarit de la classe A à 1m")
+        action_add_classeA.setStatusTip(
+            "Ajoute le gabarit de la classe A à 1m")
         action_add_classeA.triggered.connect(
             lambda: self.graph.add_gabarit('A1'))
 
         action_add_classeB = QtWidgets.QAction("Classe B à 1m", self)
-        action_add_classeB.setStatusTip("Ajoute le gabarit de la classe B à 1m")
+        action_add_classeB.setStatusTip(
+            "Ajoute le gabarit de la classe B à 1m")
         action_add_classeB.triggered.connect(
             lambda: self.graph.add_gabarit('B1'))
 
@@ -99,13 +101,18 @@ class MainWindow(QtGui.QMainWindow):
         action_add_classeB10.triggered.connect(
             lambda: self.graph.add_gabarit('B10'))
 
-        action_add_classeBECAVG = QtWidgets.QAction("Classe B EC Moyenne", self)
-        action_add_classeBECAVG.setStatusTip("Ajoute le gabarit de la Classe B en EC valeur moyenne")
-        action_add_classeBECAVG.triggered.connect(lambda: self.graph.add_gabarit('BECAVG'))
+        action_add_classeBECAVG = QtWidgets.QAction(
+            "Classe B EC Moyenne", self)
+        action_add_classeBECAVG.setStatusTip(
+            "Ajoute le gabarit de la Classe B en EC valeur moyenne")
+        action_add_classeBECAVG.triggered.connect(
+            lambda: self.graph.add_gabarit('BECAVG'))
 
         action_add_classeBECQPK = QtWidgets.QAction("Classe B EC QPeak", self)
-        action_add_classeBECQPK.setStatusTip("Ajoute le gabarit de la Classe B en EC valeur QPeak")
-        action_add_classeBECQPK.triggered.connect(lambda: self.graph.add_gabarit('BECQPK'))
+        action_add_classeBECQPK.setStatusTip(
+            "Ajoute le gabarit de la Classe B en EC valeur QPeak")
+        action_add_classeBECQPK.triggered.connect(
+            lambda: self.graph.add_gabarit('BECQPK'))
 
         range_ER = QtWidgets.QAction("Mesure ER", self)
         range_ER.setStatusTip(
@@ -133,8 +140,8 @@ class MainWindow(QtGui.QMainWindow):
             qta.icon('mdi.file-export-outline'), "Exporter image", self)
         export_image.triggered.connect(self.export_image)
 
-        export_pdf = QtWidgets.QAction(qta.icon('fa5.file-pdf'), "Exporter résultat en PDF", self)
-        export_pdf.triggered.connect(self.print_pdf)
+        #export_pdf = QtWidgets.QAction(qta.icon('fa5.file-pdf'), "Exporter résultat en PDF", self)
+        # export_pdf.triggered.connect(self.print_pdf)
 
         clear_plot = QtWidgets.QAction("Nettoyer la zone de tracer", self)
         clear_plot.triggered.connect(self.plot_clear)
@@ -152,7 +159,7 @@ class MainWindow(QtGui.QMainWindow):
             lambda: self.change_background_color('black'))
 
         change_color = QtWidgets.QAction(qta.icon('mdi.chart-bell-curve-cumulative', 'mdi.format-color-fill', options=[
-                                        {'scale_factor': 1.2}, {'color': 'red'}]), "Changer la couleur d'une courbe", self)
+            {'scale_factor': 1.2}, {'color': 'red'}]), "Changer la couleur d'une courbe", self)
         change_color.triggered.connect(self.change_plot_color)
 
         menu_bar = self.menuBar()
@@ -161,7 +168,7 @@ class MainWindow(QtGui.QMainWindow):
         file_menu.addAction(action_save_max)
         file_menu.addAction(action_CSV)
         file_menu.addAction(export_image)
-        file_menu.addAction(export_pdf)
+        # file_menu.addAction(export_pdf)
         plot_menu = menu_bar.addMenu('&Tracer')
         plot_menu.addAction(action_plot)
         plot_menu.addAction(action_plotMax)
@@ -189,7 +196,7 @@ class MainWindow(QtGui.QMainWindow):
         file_tool_bar.addAction(action_CSV)
         file_tool_bar.addAction(action_open)
         file_tool_bar.addAction(export_image)
-        file_tool_bar.addAction(export_pdf)
+        # file_tool_bar.addAction(export_pdf)
         file_tool_bar.addSeparator()
         file_tool_bar.addAction(change_color)
 
@@ -238,8 +245,8 @@ class MainWindow(QtGui.QMainWindow):
         à ouvrir
         '''
         file_name, _ = QtWidgets.QFileDialog.getOpenFileNames(self,
-                                                             "Ouvrir un fichier CSV", "",
-                                                             "All Files (*);;CSV Files (*.csv)")
+                                                              "Ouvrir un fichier CSV", "",
+                                                              "All Files (*);;CSV Files (*.csv)")
 
         if file_name:
             for f in file_name:
@@ -248,7 +255,7 @@ class MainWindow(QtGui.QMainWindow):
 
         self.read_and_plot(self.source_files)
         self.source_files.clear()
-        
+
     def checked_plot(self):
         '''
         Fonction appelée lorque l'on coche/décoche un élément de
@@ -314,8 +321,8 @@ class MainWindow(QtGui.QMainWindow):
         en cherchant le maximum (find_max)
         '''
         file_name, _ = QtWidgets.QFileDialog.getSaveFileName(self,
-                                                            "Enregistrer un fichier CSV", "",
-                                                            "CSV Files (*.csv)")
+                                                             "Enregistrer un fichier CSV", "",
+                                                             "CSV Files (*.csv)")
         self.max_df.to_csv(file_name, index=False, header=True, sep=";")
 
     def find_max(self):
@@ -328,8 +335,8 @@ class MainWindow(QtGui.QMainWindow):
         source_files = []
 
         file_name, _ = QtWidgets.QFileDialog.getOpenfile_names(self,
-                                                             "Ouvrir un fichier CSV", "",
-                                                             "All Files (*);;CSV Files (*.csv)")
+                                                               "Ouvrir un fichier CSV", "",
+                                                               "All Files (*);;CSV Files (*.csv)")
 
         if file_name:
             for f in file_name:
@@ -361,36 +368,35 @@ class MainWindow(QtGui.QMainWindow):
         self.max_df = pd.DataFrame(list(zip(data_x, data_y)), columns=[
                                    'frequence', 'level'])
 
-    def print_pdf(self):
-        
-        exporter = exporters.ImageExporter(self.graph.plot_item)
+    # def print_pdf(self):
 
-        file_image, _ = QtWidgets.QFileDialog.getSaveFileName(self,
-                                                            "Exporter un tracer", "",
-                                                            "Jpeg Files (*.jpg);; PNG Files (*.png)")
-        exporter.parameters()[
-            'width'] = 1600
-        exporter.parameters()['antialias'] = True
-        exporter.export(file_image)
+    #     exporter = exporters.ImageExporter(self.graph.plot_item)
 
-        file_name, _ = QtWidgets.QFileDialog.getSaveFileName(
-            self, "Export PDF", None, "PDF files (.pdf);;All Files()"
-        )
-        if file_name:
-            if QtCore.QFileInfo(file_name).suffix() == "":
-                file_name += ".pdf"
-        
-        text, _ = QtWidgets.QInputDialog.getText(self, "Titre du PDF", "Titre", QtWidgets.QLineEdit.Normal, "")
-        pdf = PDF(plot=file_image, data=self.mouse_tracking.dictValues, title=text, file_name=file_name)
-        pdf.generate_document()
+    #     file_image, _ = QtWidgets.QFileDialog.getSaveFileName(self,
+    #                                                         "Exporter un tracer", "",
+    #                                                         "Jpeg Files (*.jpg);; PNG Files (*.png)")
+    #     exporter.parameters()[
+    #         'width'] = 1600
+    #     exporter.parameters()['antialias'] = True
+    #     exporter.export(file_image)
 
+    #     file_name, _ = QtWidgets.QFileDialog.getSaveFileName(
+    #         self, "Export PDF", None, "PDF files (.pdf);;All Files()"
+    #     )
+    #     if file_name:
+    #         if QtCore.QFileInfo(file_name).suffix() == "":
+    #             file_name += ".pdf"
+
+    #     text, _ = QtWidgets.QInputDialog.getText(self, "Titre du PDF", "Titre", QtWidgets.QLineEdit.Normal, "")
+    #     pdf = PDF(plot=file_image, data=self.mouse_tracking.dictValues, title=text, file_name=file_name)
+    #     pdf.generate_document()
 
     def export_image(self):
         exporter = exporters.ImageExporter(self.graph.plot_item)
 
         file_name, _ = QtWidgets.QFileDialog.getSaveFileName(self,
-                                                            "Exporter un tracer", "",
-                                                            "Jpeg Files (*.jpg);; PNG Files (*.png)")
+                                                             "Exporter un tracer", "",
+                                                             "Jpeg Files (*.jpg);; PNG Files (*.png)")
         if file_name:
             if QtCore.QFileInfo(file_name).suffix() == "":
                 file_name += ".jpg"
@@ -416,6 +422,3 @@ class MainWindow(QtGui.QMainWindow):
         color = QtGui.QColorDialog.getColor()
         for item in self.list_plot.selectedItems():
             self.curves[item.text()].setPen(color)
-
-
-
