@@ -16,7 +16,8 @@ setup(
                         'qtawesome==1.0.2', 
                         'pandas==1.2.3', 
                         'jinja2==2.11.2',
-                        'weasyprint==52.4'
+                        'htmldocx',
+                        'docx'
     ],
     include_package_data = True,
     url = 'https://gitlab.aldebaran.lan/bgirard1/magicPlot',
